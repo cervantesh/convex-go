@@ -166,10 +166,22 @@ snapshot, err := watcher.Next(context.Background())
 ## Auth
 
 ```go
-client.SetAuth("jwt-from-your-auth-provider")
-client.ClearAuth()
+client, err := convex.NewClient(
+	os.Getenv("CONVEX_URL"),
+	convex.WithAuth("jwt-from-your-auth-provider"),
+)
+if err != nil {
+	log.Fatal(err)
+}
 
-if err := client.SetAdminAuth("deploy-or-admin-key", convex.UserIdentityAttributes{
+if err := client.SetAuthContext(context.Background(), "rotated-jwt"); err != nil {
+	log.Fatal(err)
+}
+if err := client.ClearAuthContext(context.Background()); err != nil {
+	log.Fatal(err)
+}
+
+if err := client.SetAdminAuthContext(context.Background(), "deploy-or-admin-key", convex.UserIdentityAttributes{
 	"email": "ada@example.com",
 	"name":  "Ada Lovelace",
 }); err != nil {
@@ -177,10 +189,21 @@ if err := client.SetAdminAuth("deploy-or-admin-key", convex.UserIdentityAttribut
 }
 ```
 
-`SetAuth` sends a bearer token for public functions. `SetAdminAuth` sends a
-Convex admin token and can impersonate an identity for internal/system
-functions. On `Client`, auth applies to HTTP calls and to realtime if it is
-started later or already running.
+`WithAuth` and `WithAdminAuth` set the initial auth state for HTTP and for any
+realtime client started later. `SetAuth` sends a bearer token for public
+functions. `SetAdminAuth` sends a Convex admin token and can impersonate an
+identity for internal/system functions.
+
+`SetAuthContext`, `ClearAuthContext`, and `SetAdminAuthContext` are the strict
+forms for long-running apps: they let you control the timeout and observe a
+realtime flush error directly. The convenience helpers without `Context`
+(`SetAuth`, `ClearAuth`, `SetAdminAuth`) use a bounded background timeout
+internally.
+
+If one of the `*Context` auth calls returns an error, the local client state is
+already updated. Future HTTP calls use the new auth immediately. The error only
+means the currently running realtime transport did not flush that change within
+the provided context.
 
 ## Application Errors
 
