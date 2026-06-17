@@ -263,7 +263,7 @@ func TestSubscriptionNextContextAndClose(t *testing.T) {
 
 	expired, cancelExpired := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancelExpired()
-	time.Sleep(time.Millisecond)
+	waitContextDone(t, expired)
 	if _, err := subscription.Next(expired); !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("expected context deadline, got %v", err)
 	}
@@ -319,7 +319,7 @@ func TestSubscriptionUnsubscribeCanRetryAfterFlushContextDeadline(t *testing.T) 
 	}
 	stillActive, cancelStillActive := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer cancelStillActive()
-	time.Sleep(time.Millisecond)
+	waitContextDone(t, stillActive)
 	if _, err := subscription.Next(stillActive); !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("expected subscription to remain active after failed close, got %v", err)
 	}
@@ -800,7 +800,7 @@ func waitClientLatestValue(t *testing.T, client *WebSocketClient, id SubscriberI
 				return
 			}
 		}
-		time.Sleep(time.Millisecond)
+		yieldTestLoop()
 	}
 }
 

@@ -448,6 +448,7 @@ func (m *Manager) runConnection(ctx context.Context, conn Conn, sessionID string
 			}
 		case result := <-writeErrCh:
 			ackPendingFlushRequests(flushRequests, result.err)
+			ackPendingFlushAcks(m.flushCh, result.err)
 			return reconnectableWebSocketError(result)
 		case <-timer.C:
 			return reconnectableWebSocketError{err: errInactiveServer, replay: true}
@@ -482,6 +483,17 @@ func ackPendingFlushRequests(requests <-chan flushRequest, err error) {
 		select {
 		case request := <-requests:
 			sendFlushAck(request.ack, err)
+		default:
+			return
+		}
+	}
+}
+
+func ackPendingFlushAcks(requests <-chan chan error, err error) {
+	for {
+		select {
+		case ack := <-requests:
+			sendFlushAck(ack, err)
 		default:
 			return
 		}
