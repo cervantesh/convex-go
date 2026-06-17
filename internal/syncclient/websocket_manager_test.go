@@ -897,7 +897,6 @@ func TestManagerAcksAllPendingFlushesOnWriteError(t *testing.T) {
 	case <-time.After(time.Second):
 		t.Fatal("timed out waiting for blocked flush write")
 	}
-	time.Sleep(20 * time.Millisecond)
 	attempt.conn.closeWithError(errFakeSocketClosed)
 
 	for range 3 {
