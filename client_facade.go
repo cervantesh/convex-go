@@ -150,7 +150,9 @@ func (c *HTTPClient) SetAuth(token string) {
 	}
 }
 
-// SetAuth sets a bearer auth token for subsequent calls.
+// SetAuth sets a bearer auth token for subsequent calls. When realtime is
+// already running it uses a bounded background context for the sync flush; use
+// SetAuthContext when you need to observe or control that flush.
 func (c *Client) SetAuth(token string) {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
@@ -158,6 +160,8 @@ func (c *Client) SetAuth(token string) {
 }
 
 // SetAuthContext sets a bearer auth token and uses ctx for any realtime flush.
+// The local client state is updated before any realtime write, so an error from
+// this method means the running transport did not flush within ctx.
 func (c *Client) SetAuthContext(ctx context.Context, token string) error {
 	c.httpClient.SetAuth(token)
 	c.mu.Lock()
@@ -180,14 +184,18 @@ func (c *HTTPClient) ClearAuth() {
 	c.adminAuth = ""
 }
 
-// ClearAuth removes auth from subsequent calls.
+// ClearAuth removes auth from subsequent calls. When realtime is already
+// running it uses a bounded background context for the sync flush; use
+// ClearAuthContext when you need to observe or control that flush.
 func (c *Client) ClearAuth() {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
 	_ = c.ClearAuthContext(ctx)
 }
 
-// ClearAuthContext removes auth and uses ctx for any realtime flush.
+// ClearAuthContext removes auth and uses ctx for any realtime flush. The local
+// client state is updated before any realtime write, so an error from this
+// method means the running transport did not flush within ctx.
 func (c *Client) ClearAuthContext(ctx context.Context) error {
 	c.httpClient.ClearAuth()
 	c.mu.Lock()
@@ -219,14 +227,18 @@ func (c *HTTPClient) SetAdminAuth(token string, actingAs ...UserIdentityAttribut
 }
 
 // SetAdminAuth sets a Convex admin auth token for subsequent calls. When
-// actingAs is provided, the admin key acts as that identity.
+// actingAs is provided, the admin key acts as that identity. When realtime is
+// already running it uses a bounded background context for the sync flush; use
+// SetAdminAuthContext when you need to observe or control that flush.
 func (c *Client) SetAdminAuth(token string, actingAs ...UserIdentityAttributes) error {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
 	return c.SetAdminAuthContext(ctx, token, actingAs...)
 }
 
-// SetAdminAuthContext sets admin auth and uses ctx for any realtime flush.
+// SetAdminAuthContext sets admin auth and uses ctx for any realtime flush. The
+// local client state is updated before any realtime write, so an error from
+// this method means the running transport did not flush within ctx.
 func (c *Client) SetAdminAuthContext(ctx context.Context, token string, actingAs ...UserIdentityAttributes) error {
 	if err := c.httpClient.SetAdminAuth(token, actingAs...); err != nil {
 		return err
