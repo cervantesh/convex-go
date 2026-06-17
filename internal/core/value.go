@@ -527,7 +527,7 @@ func valueFromWireSingleton(key string, raw any) (Value, bool, error) {
 			return Value{}, true, err
 		}
 		if !isSpecialFloat(f) {
-			return Value{}, true, fmt.Errorf("convex: float %v should be encoded as a JSON number", f)
+			return Value{}, true, fmt.Errorf("convex: float %v should be encoded as a number", f)
 		}
 		return Float64Value(f), true, nil
 	case "$set":

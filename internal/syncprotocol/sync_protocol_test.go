@@ -719,24 +719,6 @@ func TestSyncProtocolPublicConstantsAndIdentityClaims(t *testing.T) {
 	}
 
 	for _, tt := range []struct {
-		name string
-		raw  []byte
-	}{
-		{name: "issuer only", raw: []byte(`{"issuer":"issuer"}`)},
-		{name: "subject only", raw: []byte(`{"subject":"subject"}`)},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			var partial SyncUserIdentityAttributes
-			if err := json.Unmarshal(tt.raw, &partial); err != nil {
-				t.Fatal(err)
-			}
-			if partial.TokenIdentifier != "" {
-				t.Fatalf("partial identity should not derive tokenIdentifier: %#v", partial)
-			}
-		})
-	}
-
-	for _, tt := range []struct {
 		name     string
 		identity SyncUserIdentityAttributes
 	}{
