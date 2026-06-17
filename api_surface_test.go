@@ -38,6 +38,10 @@ func TestPublicAPISurfaceCanonicalMethods(t *testing.T) {
 	}
 	assertMethod(t, clientType, "Action", []reflect.Type{ctxType, stringType(), anyType}, []reflect.Type{anyType, errorType()})
 	assertMethod(t, clientType, "Subscribe", []reflect.Type{ctxType, stringType(), anyType}, []reflect.Type{reflect.TypeOf((*QuerySubscription)(nil)), errorType()})
+	assertMethod(t, clientType, "SetAuthCallback", []reflect.Type{reflect.TypeOf((UserTokenFetcher)(nil))}, []reflect.Type{errorType()})
+	assertMethod(t, clientType, "SetAuthCallbackContext", []reflect.Type{ctxType, reflect.TypeOf((UserTokenFetcher)(nil))}, []reflect.Type{errorType()})
+	assertMethod(t, clientType, "ConnectionState", nil, []reflect.Type{reflect.TypeOf(ConnectionState{})})
+	assertMethod(t, clientType, "SubscribeToConnectionState", []reflect.Type{reflect.TypeOf((func(ConnectionState))(nil))}, []reflect.Type{reflect.TypeOf((func())(nil))})
 	assertMethod(t, clientType, "Close", nil, []reflect.Type{errorType()})
 	if _, ok := clientType.MethodByName("Watch"); ok {
 		t.Fatal("Watch must not become the primary realtime verb; use Subscribe and keep WatchAll as an advanced helper")
@@ -50,6 +54,10 @@ func TestPublicAPISurfaceCanonicalMethods(t *testing.T) {
 	if method, _ := wsType.MethodByName("Mutation"); !method.Type.IsVariadic() {
 		t.Fatal("WebSocketClient.Mutation must keep the variadic SyncMutationOption escape hatch")
 	}
+	assertMethod(t, wsType, "SetAuthCallback", []reflect.Type{reflect.TypeOf((UserTokenFetcher)(nil))}, []reflect.Type{errorType()})
+	assertMethod(t, wsType, "SetAuthCallbackContext", []reflect.Type{ctxType, reflect.TypeOf((UserTokenFetcher)(nil))}, []reflect.Type{errorType()})
+	assertMethod(t, wsType, "ConnectionState", nil, []reflect.Type{reflect.TypeOf(ConnectionState{})})
+	assertMethod(t, wsType, "SubscribeToConnectionState", []reflect.Type{reflect.TypeOf((func(ConnectionState))(nil))}, []reflect.Type{reflect.TypeOf((func())(nil))})
 	assertMethod(t, wsType, "WatchAll", []reflect.Type{ctxType}, []reflect.Type{reflect.TypeOf((*QuerySetSubscription)(nil)), errorType()})
 	if _, ok := wsType.MethodByName("Watch"); ok {
 		t.Fatal("Watch must not become the primary realtime verb; use Subscribe and keep WatchAll as an advanced helper")
@@ -126,7 +134,7 @@ func TestPublicAPISurfaceDoesNotExportRawSyncProtocol(t *testing.T) {
 			"WebSocketDialer",
 			"WebSocketManager",
 			"WebSocketManagerOption":
-			t.Fatalf("%s is raw sync protocol or transport API; expose it from baseclient/internal layers, not root", name)
+				t.Fatalf("%s is raw sync protocol or transport API; expose it from baseclient/internal layers, not root", name)
 		}
 	}
 }
@@ -148,6 +156,12 @@ func TestPublicAPISurfaceExportedDeclarationsAreReviewed(t *testing.T) {
 		"CanonicalizedModulePath",
 		"CanonicalizedUDFPath",
 		"Client",
+		"ConnectionPhase",
+		"ConnectionPhaseConnected",
+		"ConnectionPhaseConnecting",
+		"ConnectionPhaseDisconnected",
+		"ConnectionPhaseReconnecting",
+		"ConnectionState",
 		"ConvexError",
 		"ConvexErrorResult",
 		"DecodeJSON",
@@ -209,6 +223,7 @@ func TestPublicAPISurfaceExportedDeclarationsAreReviewed(t *testing.T) {
 		"UDFPath",
 		"UserAuthToken",
 		"UserIdentityAttributes",
+		"UserTokenFetcher",
 		"ValidateIdentifier",
 		"Value",
 		"ValueFromGo",
