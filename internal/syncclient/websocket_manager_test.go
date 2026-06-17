@@ -884,13 +884,11 @@ func TestManagerAcksAllPendingFlushesOnWriteError(t *testing.T) {
 		t.Fatal(err)
 	}
 	blocked, _ := attempt.conn.blockNextWrite()
-	flushCtx, cancelFlush := context.WithTimeout(context.Background(), time.Second)
-	defer cancelFlush()
-	flushDone := make(chan error, 3)
-	for range 3 {
-		go func() {
-			flushDone <- manager.Flush(flushCtx)
-		}()
+	flushDone := make([]chan error, 3)
+	for i := range flushDone {
+		ack := make(chan error, 1)
+		flushDone[i] = ack
+		manager.flushCh <- ack
 	}
 	select {
 	case <-blocked:
@@ -899,9 +897,9 @@ func TestManagerAcksAllPendingFlushesOnWriteError(t *testing.T) {
 	}
 	attempt.conn.closeWithError(errFakeSocketClosed)
 
-	for range 3 {
+	for _, ack := range flushDone {
 		select {
-		case err := <-flushDone:
+		case err := <-ack:
 			if err == nil {
 				t.Fatal("expected flush error after write failure")
 			}
