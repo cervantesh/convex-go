@@ -385,8 +385,7 @@ func (c *WebSocketClient) releaseRuntimeState() {
 		c.subscriptions = nil
 		c.watchers = nil
 		c.latest = QueryResults{}
-		hasLatest = false
-		c.hasLatest = hasLatest
+		c.hasLatest = false
 		c.mu.Unlock()
 	})
 }
