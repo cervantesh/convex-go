@@ -23,6 +23,9 @@ func TestQualityPolicyDocumentsRepeatableGates(t *testing.T) {
 		"sonar.go.coverage.reportPaths=coverage.out",
 		"sonar.go.tests.reportPaths=test-report.out",
 		"sonar.go.golangci-lint.reportPaths=golangci-report.json",
+		"Optional Live Integration Workflow",
+		"workflow_dispatch",
+		"LIVE_INTEGRATION.md",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
@@ -214,9 +217,47 @@ func TestQualityDocsIncludeRepositoryHygieneGates(t *testing.T) {
 		"go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90",
 		"Linux, macOS, and Windows",
 		"Ubuntu quality job",
+		"Live Integration",
+		"preflight environment check",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
+		}
+	}
+}
+
+func TestLiveIntegrationWorkflowIsOptInAndDocumented(t *testing.T) {
+	workflow := readTextFile(t, ".github/workflows/live-integration.yml")
+	for _, want := range []string{
+		"workflow_dispatch",
+		"CONVEX_LIVE_DEPLOYMENT_URL",
+		"go run ./cmd/convex-go-maint integration-env-check",
+		"go test . -tags=integration -run TestLiveIntegration -count=1",
+	} {
+		if !strings.Contains(workflow, want) {
+			t.Fatalf(".github/workflows/live-integration.yml must contain %q", want)
+		}
+	}
+	for _, blocked := range []string{
+		"pull_request:",
+		"push:",
+	} {
+		if strings.Contains(workflow, blocked) {
+			t.Fatalf(".github/workflows/live-integration.yml must not contain %q", blocked)
+		}
+	}
+
+	body := readTextFile(t, "docs/maintainers/LIVE_INTEGRATION.md")
+	for _, want := range []string{
+		"does not replace offline unit, fixture, race, lint, or coverage gates",
+		"CONVEX_LIVE_DEPLOYMENT_URL",
+		"testdata/live-integration/convex/",
+		"live:listMessages",
+		"live:sendMessage",
+		"live:ping",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("docs/maintainers/LIVE_INTEGRATION.md must contain %q", want)
 		}
 	}
 }
@@ -311,6 +352,11 @@ func TestCommunityReadinessFilesExist(t *testing.T) {
 			"Maintainer Guides",
 			"Cross-platform automation belongs in `cmd/convex-go-maint`",
 		},
+		"docs/maintainers/LIVE_INTEGRATION.md": {
+			"Live Integration Workflow",
+			"CONVEX_LIVE_DEPLOYMENT_URL",
+			"live:listMessages",
+		},
 		"docs/maintainers/PUBLICATION.md": {
 			"Publication Workflow",
 			"export-snapshot",
@@ -326,6 +372,11 @@ func TestCommunityReadinessFilesExist(t *testing.T) {
 		".github/release.yml": {
 			"Breaking Changes",
 			"Quality And Tooling",
+		},
+		".github/workflows/live-integration.yml": {
+			"workflow_dispatch",
+			"integration-env-check",
+			"TestLiveIntegration",
 		},
 		".github/workflows/release.yml": {
 			"workflow_dispatch",
