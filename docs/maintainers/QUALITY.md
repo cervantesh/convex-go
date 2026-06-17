@@ -73,3 +73,17 @@ generation, and golangci-lint on Go 1.25 and one current stable Go version.
 Dependency additions should be justified in the issue or PR that introduces
 them. Public API changes require an issue with compatibility notes while the
 module is pre-v1.
+
+## Optional Live Integration Workflow
+
+Live infrastructure is optional and must not replace the offline gates in CI.
+
+The separate `Live Integration` workflow:
+
+- runs only on manual `workflow_dispatch`
+- requires maintainer-provided secrets for the deployment URL
+- runs a preflight environment check before the live test
+- exercises a build-tagged live test without changing the default CI contract
+
+See [LIVE_INTEGRATION.md](LIVE_INTEGRATION.md) for the deployment contract,
+secrets, and sample Convex app used by the live workflow.

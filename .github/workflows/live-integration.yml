@@ -1,0 +1,38 @@
+name: Live Integration
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Branch or commit to validate against the live Convex deployment
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  live-integration:
+    runs-on: ubuntu-latest
+    env:
+      CONVEX_URL: ${{ secrets.CONVEX_LIVE_DEPLOYMENT_URL }}
+      CONVEX_AUTH_TOKEN: ${{ secrets.CONVEX_LIVE_AUTH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.3
+        with:
+          ref: ${{ inputs.target }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v6.4.0
+        with:
+          go-version: stable
+          check-latest: true
+          cache: true
+
+      - name: Verify live integration environment
+        run: go run ./cmd/convex-go-maint integration-env-check
+
+      - name: Run live integration tests
+        run: go test . -tags=integration -run TestLiveIntegration -count=1

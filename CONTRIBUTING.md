@@ -32,6 +32,7 @@ Compatibility claims must cite an upstream source and be backed by an offline fi
 
 See [docs/maintainers/DEVELOPMENT.md](docs/maintainers/DEVELOPMENT.md) for the required spec-driven and TDD workflow.
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before moving exported APIs or changing package boundaries.
+See [docs/maintainers/LIVE_INTEGRATION.md](docs/maintainers/LIVE_INTEGRATION.md) for the manual live deployment workflow.
 Release preparation is tracked in [docs/maintainers/RELEASE.md](docs/maintainers/RELEASE.md).
 Public snapshot export is documented in [docs/maintainers/PUBLICATION.md](docs/maintainers/PUBLICATION.md).
 
