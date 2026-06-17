@@ -134,7 +134,7 @@ func TestPublicAPISurfaceDoesNotExportRawSyncProtocol(t *testing.T) {
 			"WebSocketDialer",
 			"WebSocketManager",
 			"WebSocketManagerOption":
-				t.Fatalf("%s is raw sync protocol or transport API; expose it from baseclient/internal layers, not root", name)
+					t.Fatalf("%s is raw sync protocol or transport API; expose it from baseclient/internal layers, not root", name)
 		}
 	}
 }
