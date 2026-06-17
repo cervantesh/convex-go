@@ -7,6 +7,9 @@ All notable changes to this project will be documented here.
 - Move Sonar scanning and quality report publication into GitHub Actions so
   the public maintainer workflow no longer depends on workstation-local Sonar
   runs.
+- Enable GitHub-native repository hardening: Dependabot version updates,
+  Dependabot security updates, vulnerability alerts, private vulnerability
+  reporting, immutable releases, and CodeQL scanning.
 
 ## 0.1.0 - 2026-06-16
 

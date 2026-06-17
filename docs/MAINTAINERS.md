@@ -24,3 +24,6 @@ Maintainer workflow docs:
 These guides should stay shell-neutral and workstation-neutral.
 Cross-platform automation belongs in `cmd/convex-go-maint`, not in local-only
 scripts.
+
+GitHub-native repository automation should stay in tracked config under
+`.github/`, including Dependabot and CodeQL.

@@ -5,8 +5,8 @@ secrets, credential leaks, or exploitable vulnerabilities.
 
 ## Reporting
 
-If GitHub private vulnerability reporting is enabled for this repository, use
-that channel.
+GitHub private vulnerability reporting is enabled for this repository. Use that
+channel first.
 
 If no private channel is available, open a minimal public issue that says only:
 "Security report requested." Do not include exploit details, secrets, stack
