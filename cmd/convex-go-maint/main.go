@@ -37,6 +37,8 @@ func runWithIO(args []string, stdout, stderr io.Writer) error {
 		return runFmtCheck(args[1:], stdout, stderr)
 	case "coverage-check":
 		return runCoverageCheck(args[1:], stdout, stderr)
+	case "export-snapshot":
+		return runExportSnapshot(args[1:], stdout, stderr)
 	case "release-check":
 		return runReleaseCheck(args[1:], stdout, stderr)
 	case "-h", "--help", "help":
@@ -94,17 +96,7 @@ func runCoverageCheck(args []string, stdout, stderr io.Writer) error {
 }
 
 func trackedGoFiles(repo string) ([]string, error) {
-	cmd := exec.Command("git", "ls-files", "--", "*.go")
-	cmd.Dir = repo
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, fmt.Errorf("git ls-files: %w", err)
-	}
-	lines := strings.Fields(strings.TrimSpace(string(output)))
-	if len(lines) == 1 && lines[0] == "" {
-		return nil, nil
-	}
-	return lines, nil
+	return gitTrackedFiles(repo, "*.go")
 }
 
 func listUnformattedFiles(repo string, files []string) ([]string, error) {
@@ -180,5 +172,6 @@ func writeUsage(w io.Writer) {
 	_, _ = fmt.Fprintln(w, "Usage:")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint fmt-check")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90")
+	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint export-snapshot -out ../convex-go-public -git-init")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint release-check -version=0.1.0 -notes-out=release-notes.md")
 }

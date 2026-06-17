@@ -56,19 +56,18 @@ func TestReadmeIntroducesBaseClientAfterMainClientPath(t *testing.T) {
 func TestReadmeSeparatesPublicAndMaintainerDocs(t *testing.T) {
 	body := readTextFile(t, "README.md")
 	for _, want := range []string{
+		"docs/RECIPES.md",
 		"docs/PARITY.md",
 		"docs/CONFORMANCE.md",
 		"docs/ARCHITECTURE.md",
-		"docs/DEVELOPMENT.md",
-		"docs/QUALITY.md",
-		"docs/MUTATION_TESTING.md",
-		"RELEASE.md",
+		"docs/MAINTAINERS.md",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("README.md must document %q", want)
 		}
 	}
 	for _, blocked := range []string{
+		"docs/maintainers/",
 		"docs/AGENTS.md",
 		"roadmap and GitHub issue plan",
 	} {
@@ -128,7 +127,6 @@ func TestVersionedDocsAvoidLaptopPaths(t *testing.T) {
 	paths := []string{
 		filepath.Join(root, "README.md"),
 		filepath.Join(root, "CONTRIBUTING.md"),
-		filepath.Join(root, "RELEASE.md"),
 	}
 	if err := filepath.WalkDir(filepath.Join(root, "docs"), func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
@@ -159,7 +157,6 @@ func TestVersionedDocsAvoidPowerShellSpecificExamples(t *testing.T) {
 	paths := []string{
 		"README.md",
 		"CONTRIBUTING.md",
-		"RELEASE.md",
 	}
 	if err := filepath.WalkDir(filepath.Join(root, "docs"), func(path string, entry os.DirEntry, err error) error {
 		if err != nil {
@@ -225,12 +222,12 @@ func TestParityDocsStayStatusFocused(t *testing.T) {
 }
 
 func TestReleaseChecklistReferencesCurrentVersionFile(t *testing.T) {
-	body := readTextFile(t, "RELEASE.md")
+	body := readTextFile(t, "docs/maintainers/RELEASE.md")
 	if !strings.Contains(body, "client_options.go") {
-		t.Fatal("RELEASE.md must point at client_options.go for the version constant")
+		t.Fatal("docs/maintainers/RELEASE.md must point at client_options.go for the version constant")
 	}
 	if strings.Contains(body, "`client.go`") {
-		t.Fatal("RELEASE.md must not reference the removed client.go file")
+		t.Fatal("docs/maintainers/RELEASE.md must not reference the removed client.go file")
 	}
 }
 

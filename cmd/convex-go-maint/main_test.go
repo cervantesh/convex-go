@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -132,6 +133,78 @@ func TestRunWithIOHelp(t *testing.T) {
 	}
 }
 
+func TestParseNULSeparated(t *testing.T) {
+	paths := parseNULSeparated([]byte("README.md\x00internal/core/value.go\x00"))
+	want := []string{"README.md", "internal/core/value.go"}
+	if strings.Join(paths, ",") != strings.Join(want, ",") {
+		t.Fatalf("paths = %#v, want %#v", paths, want)
+	}
+}
+
+func TestRunWithIOExportSnapshotCopiesTrackedFilesOnly(t *testing.T) {
+	repo := createTrackedTestRepo(t)
+	if err := os.MkdirAll(filepath.Join(repo, "tmp"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(repo, "tmp", "local-only.txt"), []byte("ignore me"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	dest := filepath.Join(t.TempDir(), "snapshot")
+	var stdout bytes.Buffer
+	if err := runWithIO([]string{"export-snapshot", "-repo", repo, "-out", dest}, &stdout, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(stdout.String(), "exported") {
+		t.Fatalf("unexpected stdout: %q", stdout.String())
+	}
+	assertPathExists(t, filepath.Join(dest, "README.md"))
+	assertPathExists(t, filepath.Join(dest, "go.mod"))
+	assertPathMissing(t, filepath.Join(dest, "tmp", "local-only.txt"))
+	assertPathMissing(t, filepath.Join(dest, ".git"))
+}
+
+func TestRunWithIOExportSnapshotInitializesGitRepository(t *testing.T) {
+	repo := createTrackedTestRepo(t)
+	dest := filepath.Join(t.TempDir(), "snapshot")
+	if err := runWithIO([]string{
+		"export-snapshot",
+		"-repo", repo,
+		"-out", dest,
+		"-git-init",
+		"-initial-branch", "main",
+		"-commit-message", "Initial public snapshot",
+	}, &bytes.Buffer{}, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	assertPathExists(t, filepath.Join(dest, ".git"))
+
+	branch := strings.TrimSpace(gitOutput(t, dest, "rev-parse", "--abbrev-ref", "HEAD"))
+	if branch != "main" {
+		t.Fatalf("branch = %q, want main", branch)
+	}
+	commitMessage := strings.TrimSpace(gitOutput(t, dest, "log", "-1", "--pretty=%s"))
+	if commitMessage != "Initial public snapshot" {
+		t.Fatalf("commit message = %q, want %q", commitMessage, "Initial public snapshot")
+	}
+}
+
+func TestRunWithIOExportSnapshotRejectsNestedDestination(t *testing.T) {
+	repo := createTrackedTestRepo(t)
+	dest := filepath.Join(repo, "dist", "public")
+	err := runWithIO([]string{"export-snapshot", "-repo", repo, "-out", dest}, &bytes.Buffer{}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "must be outside repository root") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestRunWithIOExportSnapshotRequiresOut(t *testing.T) {
+	err := runWithIO([]string{"export-snapshot"}, &bytes.Buffer{}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "requires -out") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
 func maintGitRepo(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
@@ -139,4 +212,43 @@ func maintGitRepo(t *testing.T) string {
 	runGit(t, root, "config", "user.name", "Test User")
 	runGit(t, root, "config", "user.email", "test@example.com")
 	return root
+}
+
+func createTrackedTestRepo(t *testing.T) string {
+	t.Helper()
+	root := maintGitRepo(t)
+	if err := os.WriteFile(filepath.Join(root, "README.md"), []byte("# test\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module example.com/test\n\ngo 1.25\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	runGit(t, root, "add", "README.md", "go.mod")
+	runGit(t, root, "commit", "-m", "init")
+	return root
+}
+
+func gitOutput(t *testing.T, dir string, args ...string) string {
+	t.Helper()
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Fatalf("git %s failed: %v\n%s", strings.Join(args, " "), err, output)
+	}
+	return string(output)
+}
+
+func assertPathExists(t *testing.T, path string) {
+	t.Helper()
+	if _, err := os.Stat(path); err != nil {
+		t.Fatalf("expected path %s: %v", path, err)
+	}
+}
+
+func assertPathMissing(t *testing.T, path string) {
+	t.Helper()
+	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("expected %s to be missing, got %v", path, err)
+	}
 }

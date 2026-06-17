@@ -467,12 +467,15 @@ Community usage recipes:
 
 - [docs/RECIPES.md](docs/RECIPES.md)
 
+Public project docs:
+
+- [docs/PARITY.md](docs/PARITY.md)
+- [docs/CONFORMANCE.md](docs/CONFORMANCE.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+
 Maintainer workflow docs:
 
-- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
-- [docs/QUALITY.md](docs/QUALITY.md)
-- [docs/MUTATION_TESTING.md](docs/MUTATION_TESTING.md)
-- [RELEASE.md](RELEASE.md)
+- [docs/MAINTAINERS.md](docs/MAINTAINERS.md)
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for maintainer workflow details.
 Security reporting and support boundaries are documented in [SECURITY.md](SECURITY.md)

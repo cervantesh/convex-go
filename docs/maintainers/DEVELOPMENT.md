@@ -50,7 +50,7 @@ must cite an upstream `convex-js`, `convex-py`, `convex-rs`, or Convex docs
 source and must test one observable behavior without contacting a live Convex
 deployment.
 
-See [CONFORMANCE.md](CONFORMANCE.md) for the fixture inventory, source rules,
+See [../CONFORMANCE.md](../CONFORMANCE.md) for the fixture inventory, source rules,
 and focused RED/GREEN commands.
 
 ## Quality Gates
