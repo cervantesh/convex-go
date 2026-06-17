@@ -25,14 +25,15 @@ git diff --check
 ```
 
 Coverage must stay at or above 90%. Sonar report generation is documented in
-[docs/QUALITY.md](docs/QUALITY.md).
+[docs/maintainers/QUALITY.md](docs/maintainers/QUALITY.md).
 
 Keep changes scoped to the issue being addressed. For protocol work, prefer fixtures and deterministic tests over live Convex deployments.
 Compatibility claims must cite an upstream source and be backed by an offline fixture; see [docs/CONFORMANCE.md](docs/CONFORMANCE.md).
 
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the required spec-driven and TDD workflow.
+See [docs/maintainers/DEVELOPMENT.md](docs/maintainers/DEVELOPMENT.md) for the required spec-driven and TDD workflow.
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before moving exported APIs or changing package boundaries.
-Release preparation is tracked in [RELEASE.md](RELEASE.md).
+Release preparation is tracked in [docs/maintainers/RELEASE.md](docs/maintainers/RELEASE.md).
+Public snapshot export is documented in [docs/maintainers/PUBLICATION.md](docs/maintainers/PUBLICATION.md).
 
 ## Compatibility Priorities
 

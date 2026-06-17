@@ -8,7 +8,7 @@ import (
 )
 
 func TestQualityPolicyDocumentsRepeatableGates(t *testing.T) {
-	body := readTextFile(t, "docs/QUALITY.md")
+	body := readTextFile(t, "docs/maintainers/QUALITY.md")
 	for _, want := range []string{
 		"go test ./...",
 		"go test ./... -race -count=1",
@@ -25,7 +25,7 @@ func TestQualityPolicyDocumentsRepeatableGates(t *testing.T) {
 		"sonar.go.golangci-lint.reportPaths=golangci-report.json",
 	} {
 		if !strings.Contains(body, want) {
-			t.Fatalf("docs/QUALITY.md must document %q", want)
+			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
 		}
 	}
 }
@@ -55,7 +55,7 @@ func TestSonarProjectUsesGeneratedReportPaths(t *testing.T) {
 
 func TestSonarReportPathsAreGeneratedAndUploaded(t *testing.T) {
 	sonar := readTextFile(t, "sonar-project.properties")
-	quality := readTextFile(t, "docs/QUALITY.md")
+	quality := readTextFile(t, "docs/maintainers/QUALITY.md")
 	workflow := readTextFile(t, ".github/workflows/ci.yml")
 	for report, command := range map[string]string{
 		"coverage.out":         "go test -coverprofile=coverage.out ./...",
@@ -69,7 +69,7 @@ func TestSonarReportPathsAreGeneratedAndUploaded(t *testing.T) {
 			t.Fatalf(".github/workflows/ci.yml must generate or upload report %s", report)
 		}
 		if !strings.Contains(quality, report) {
-			t.Fatalf("docs/QUALITY.md must document report %s", report)
+			t.Fatalf("docs/maintainers/QUALITY.md must document report %s", report)
 		}
 		if !strings.Contains(workflow, command) {
 			t.Fatalf(".github/workflows/ci.yml must generate report %s with %q", report, command)
@@ -199,7 +199,7 @@ func TestCIIncludesRepositoryHygieneGates(t *testing.T) {
 }
 
 func TestQualityDocsIncludeRepositoryHygieneGates(t *testing.T) {
-	body := readTextFile(t, "docs/QUALITY.md")
+	body := readTextFile(t, "docs/maintainers/QUALITY.md")
 	for _, want := range []string{
 		"go run ./cmd/convex-go-maint fmt-check",
 		"go test ./... -count=1",
@@ -216,13 +216,13 @@ func TestQualityDocsIncludeRepositoryHygieneGates(t *testing.T) {
 		"Ubuntu quality job",
 	} {
 		if !strings.Contains(body, want) {
-			t.Fatalf("docs/QUALITY.md must document %q", want)
+			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
 		}
 	}
 }
 
 func TestMutationTestingDocsDefineCampaignGovernance(t *testing.T) {
-	body := readTextFile(t, "docs/MUTATION_TESTING.md")
+	body := readTextFile(t, "docs/maintainers/MUTATION_TESTING.md")
 	for _, want := range []string{
 		"CervoMutant",
 		"ci-fast",
@@ -236,7 +236,7 @@ func TestMutationTestingDocsDefineCampaignGovernance(t *testing.T) {
 		"local CervoMutant executable available in your environment",
 	} {
 		if !strings.Contains(body, want) {
-			t.Fatalf("docs/MUTATION_TESTING.md must document %q", want)
+			t.Fatalf("docs/maintainers/MUTATION_TESTING.md must document %q", want)
 		}
 	}
 	for _, blocked := range []string{
@@ -246,7 +246,7 @@ func TestMutationTestingDocsDefineCampaignGovernance(t *testing.T) {
 		"| issue/PR |",
 	} {
 		if strings.Contains(body, blocked) {
-			t.Fatalf("docs/MUTATION_TESTING.md must not document %q", blocked)
+			t.Fatalf("docs/maintainers/MUTATION_TESTING.md must not document %q", blocked)
 		}
 	}
 }
@@ -307,12 +307,25 @@ func TestCommunityReadinessFilesExist(t *testing.T) {
 			"Unreleased",
 			"Community Go client",
 		},
-		"RELEASE.md": {
+		"docs/MAINTAINERS.md": {
+			"Maintainer Guides",
+			"Cross-platform automation belongs in `cmd/convex-go-maint`",
+		},
+		"docs/maintainers/PUBLICATION.md": {
+			"Publication Workflow",
+			"export-snapshot",
+			"Initial public snapshot",
+		},
+		"docs/maintainers/RELEASE.md": {
 			"Release Checklist",
 			"Version",
 			"CHANGELOG.md",
 			"Automated Release Workflow",
 			"pre-v1 prerelease",
+		},
+		".github/release.yml": {
+			"Breaking Changes",
+			"Quality And Tooling",
 		},
 		".github/workflows/release.yml": {
 			"workflow_dispatch",
