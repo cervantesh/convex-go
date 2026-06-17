@@ -112,31 +112,56 @@ func (c *Client) Close() error {
 	if realtime == nil {
 		return nil
 	}
-	return realtime.Close()
+	err := realtime.Close()
+	c.clearConnectionStateObserverAttachments()
+	return err
 }
 
 func (c *Client) realtime(ctx context.Context) (*WebSocketClient, error) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
 	if c.webSocketClient != nil {
-		return c.webSocketClient, nil
+		c.mu.Lock()
+		realtime := c.webSocketClient
+		c.mu.Unlock()
+		return realtime, nil
 	}
-	realtime, err := NewWebSocketClient(ctx, c.deploymentURL, c.webSocketOptions...)
+	c.mu.Lock()
+	deploymentURL := c.deploymentURL
+	webSocketOptions := append([]WebSocketOption(nil), c.webSocketOptions...)
+	authCallback := c.authCallback
+	adminAuthToken := c.adminAuthToken
+	adminActingAs := cloneUserIdentityAttributes(c.adminActingAs)
+	authToken := c.authToken
+	c.mu.Unlock()
+	realtime, err := NewWebSocketClient(ctx, deploymentURL, webSocketOptions...)
 	if err != nil {
 		return nil, err
 	}
-	if c.adminAuthToken != "" {
-		if err := realtime.setAdminAuth(ctx, c.adminAuthToken, false, c.adminActingAs...); err != nil {
+	if authCallback != nil {
+		if err := realtime.setAuthCallback(ctx, authCallback, false); err != nil {
 			_ = realtime.Close()
 			return nil, err
 		}
-	} else if c.authToken != "" {
-		if err := realtime.setAuth(ctx, c.authToken, false); err != nil {
+	} else if adminAuthToken != "" {
+		if err := realtime.setAdminAuth(ctx, adminAuthToken, false, adminActingAs...); err != nil {
+			_ = realtime.Close()
+			return nil, err
+		}
+	} else if authToken != "" {
+		if err := realtime.setAuth(ctx, authToken, false); err != nil {
 			_ = realtime.Close()
 			return nil, err
 		}
 	}
+	c.mu.Lock()
+	if c.webSocketClient != nil {
+		existing := c.webSocketClient
+		c.mu.Unlock()
+		_ = realtime.Close()
+		return existing, nil
+	}
 	c.webSocketClient = realtime
+	c.mu.Unlock()
+	c.attachConnectionStateObservers(realtime)
 	return realtime, nil
 }
 
@@ -148,6 +173,7 @@ func (c *HTTPClient) SetAuth(token string) {
 	if token != "" {
 		c.adminAuth = ""
 	}
+	c.authCallback = nil
 }
 
 // SetAuth sets a bearer auth token for subsequent calls. When realtime is
@@ -168,6 +194,7 @@ func (c *Client) SetAuthContext(ctx context.Context, token string) error {
 	c.authToken = token
 	c.adminAuthToken = ""
 	c.adminActingAs = nil
+	c.authCallback = nil
 	realtime := c.webSocketClient
 	c.mu.Unlock()
 	if realtime != nil {
@@ -182,6 +209,7 @@ func (c *HTTPClient) ClearAuth() {
 	defer c.mu.Unlock()
 	c.auth = ""
 	c.adminAuth = ""
+	c.authCallback = nil
 }
 
 // ClearAuth removes auth from subsequent calls. When realtime is already
@@ -202,6 +230,7 @@ func (c *Client) ClearAuthContext(ctx context.Context) error {
 	c.authToken = ""
 	c.adminAuthToken = ""
 	c.adminActingAs = nil
+	c.authCallback = nil
 	realtime := c.webSocketClient
 	c.mu.Unlock()
 	if realtime != nil {
@@ -223,6 +252,7 @@ func (c *HTTPClient) SetAdminAuth(token string, actingAs ...UserIdentityAttribut
 	if adminAuth != "" {
 		c.auth = ""
 	}
+	c.authCallback = nil
 	return nil
 }
 
@@ -247,6 +277,7 @@ func (c *Client) SetAdminAuthContext(ctx context.Context, token string, actingAs
 	c.adminAuthToken = token
 	c.adminActingAs = cloneUserIdentityAttributes(actingAs)
 	c.authToken = ""
+	c.authCallback = nil
 	realtime := c.webSocketClient
 	c.mu.Unlock()
 	if realtime != nil {
@@ -254,5 +285,38 @@ func (c *Client) SetAdminAuthContext(ctx context.Context, token string, actingAs
 			return err
 		}
 	}
+	return nil
+}
+
+// SetAuthCallback installs a user JWT callback for HTTP requests and realtime
+// auth refresh. Passing nil clears any current user/admin auth.
+func (c *Client) SetAuthCallback(fetcher UserTokenFetcher) error {
+	ctx, cancel := boundedRealtimeControlContext()
+	defer cancel()
+	return c.SetAuthCallbackContext(ctx, fetcher)
+}
+
+// SetAuthCallbackContext installs a user JWT callback and uses ctx for any
+// realtime auth flush.
+func (c *Client) SetAuthCallbackContext(ctx context.Context, fetcher UserTokenFetcher) error {
+	c.mu.Lock()
+	realtime := c.webSocketClient
+	c.mu.Unlock()
+	if realtime != nil {
+		if err := realtime.SetAuthCallbackContext(ctx, fetcher); err != nil {
+			return err
+		}
+	} else if fetcher != nil {
+		if _, err := fetcher(false); err != nil {
+			return err
+		}
+	}
+	c.httpClient.setAuthCallback(fetcher)
+	c.mu.Lock()
+	c.authCallback = fetcher
+	c.authToken = ""
+	c.adminAuthToken = ""
+	c.adminActingAs = nil
+	c.mu.Unlock()
 	return nil
 }
