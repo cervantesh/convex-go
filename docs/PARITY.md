@@ -18,6 +18,8 @@ main path for normal applications.
 | Convex value encoding and decoding | Supported | Covers Convex JSON markers such as integers, floats, and bytes. |
 | Application and transport errors | Supported | Includes `ConvexError`, `FunctionError`, and `HTTPError`. |
 | Realtime subscriptions and sync-backed mutations | Supported | `Client.Subscribe` is the main path; `NewWebSocketClient` is the explicit realtime client. |
+| User auth callback refresh | Supported | Root `SetAuthCallback` mirrors the refreshable user-token flow exposed by the official JS and Rust clients, while keeping admin auth explicit. |
+| Public realtime connection state | Supported | `ConnectionState` and `SubscribeToConnectionState` expose stable connection snapshots without leaking raw protocol transport types. |
 | Optimistic local query updates | Supported | Scoped to active realtime queries through `WithOptimisticUpdate`. |
 | Advanced sync state machine | Advanced | `baseclient` is public for integrators, bindings, and alternate transports. |
 | Typed references and offline codegen | Partial | Typed refs are stable, but generated argument and result types still default to generic Go shapes. |
