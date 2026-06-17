@@ -25,6 +25,7 @@ type functionRef struct {
 	Name       string
 	Kind       string
 	VarName    string
+	ResultType string
 }
 
 var exportedFunctionPattern = regexp.MustCompile(`(?m)export\s+const\s+([A-Za-z_$][A-Za-z0-9_$]*)(?:\s*:\s*[^=]+)?\s*=\s*(query|mutation|action|internalQuery|internalMutation|internalAction)\s*\(`)
@@ -81,18 +82,20 @@ func scanSourceDir(sourceDir string) ([]functionRef, error) {
 			return err
 		}
 		source := stripCommentsAndStrings(string(data))
-		for _, match := range exportedFunctionPattern.FindAllStringSubmatch(source, -1) {
+		for _, match := range exportedFunctionPattern.FindAllStringSubmatchIndex(source, -1) {
 			refs = append(refs, functionRef{
 				ModulePath: modulePath,
-				Name:       match[1],
-				Kind:       refKind(match[2]),
+				Name:       source[match[2]:match[3]],
+				Kind:       refKind(source[match[4]:match[5]]),
+				ResultType: inferResultType(string(data), source, match[1]-1),
 			})
 		}
-		for _, match := range defaultFunctionPattern.FindAllStringSubmatch(source, -1) {
+		for _, match := range defaultFunctionPattern.FindAllStringSubmatchIndex(source, -1) {
 			refs = append(refs, functionRef{
 				ModulePath: modulePath,
 				Name:       "default",
-				Kind:       refKind(match[1]),
+				Kind:       refKind(source[match[2]:match[3]]),
+				ResultType: inferResultType(string(data), source, match[1]-1),
 			})
 		}
 		return nil
@@ -124,8 +127,12 @@ func render(packageName string, importPath string, refs []functionRef) ([]byte, 
 	fmt.Fprintf(&out, "package %s\n\n", packageName)
 	fmt.Fprintf(&out, "import convex %q\n\n", importPath)
 	for _, ref := range refs {
+		resultType := ref.ResultType
+		if resultType == "" {
+			resultType = "any"
+		}
 		fmt.Fprintf(&out, "// %s references Convex function %s:%s.\n", ref.VarName, ref.ModulePath, ref.Name)
-		fmt.Fprintf(&out, "var %s = convex.%s[map[string]any, any](%q)\n\n", ref.VarName, constructor(ref.Kind), ref.ModulePath+":"+ref.Name)
+		fmt.Fprintf(&out, "var %s = convex.%s[map[string]any, %s](%q)\n\n", ref.VarName, constructor(ref.Kind), resultType, ref.ModulePath+":"+ref.Name)
 	}
 	formatted, err := format.Source(out.Bytes())
 	if err != nil {
