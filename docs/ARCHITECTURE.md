@@ -39,13 +39,15 @@ is the explicit realtime client for direct sync use. Framework integrations
 that need the deterministic sync state machine should use
 `github.com/cervantesh/convex-go/baseclient`.
 
-Root realtime auth should stay on `UserIdentityAttributes`. The sync-protocol
-identity type `SyncUserIdentityAttributes` is an advanced/baseclient concern.
+Root realtime auth should stay on `UserIdentityAttributes`. Refreshable user
+JWT fetchers belong on `SetAuthCallback`; the sync-protocol identity type
+`SyncUserIdentityAttributes` remains an advanced/baseclient concern.
 
 The low-level WebSocket manager, reconnect loop, dialer abstraction, and flush
 orchestration live in `internal/syncclient`. The root `WebSocketClient` wraps
 that package and exposes only subscriptions, one-shot realtime queries,
-WebSocket mutations, `WatchAll`, and `Close`.
+WebSocket mutations, `SetAuthCallback`, `ConnectionState`,
+`SubscribeToConnectionState`, `WatchAll`, and `Close`.
 
 ## Advanced protocol APIs
 
