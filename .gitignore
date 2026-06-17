@@ -1,0 +1,13 @@
+.DS_Store
+*.exe
+*.test
+coverage.out
+test-report.out
+go-test-report.json
+golangci-report.json
+golangci-lint-report.xml
+.cervomut/
+cervomut.yaml
+dist/
+tmp/
+tools/
