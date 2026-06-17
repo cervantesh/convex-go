@@ -25,9 +25,10 @@ type HTTPClient struct {
 	skipDeploymentURLCheck bool
 	mutationQueue          chan struct{}
 
-	mu        sync.RWMutex
-	auth      string
-	adminAuth string
+	mu           sync.RWMutex
+	auth         string
+	adminAuth    string
+	authCallback UserTokenFetcher
 }
 
 // Client is the primary Convex client facade. It uses HTTP for Query,
@@ -42,6 +43,10 @@ type Client struct {
 	authToken        string
 	adminAuthToken   string
 	adminActingAs    []UserIdentityAttributes
+	authCallback     UserTokenFetcher
+
+	connectionStateObservers      map[uint64]*connectionStateObserver
+	nextConnectionStateObserverID uint64
 }
 
 // Option configures a Client.
