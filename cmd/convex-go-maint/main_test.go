@@ -10,6 +10,15 @@ import (
 	"testing"
 )
 
+func TestRunReturnsStatusCodes(t *testing.T) {
+	if code := run([]string{"help"}, &bytes.Buffer{}, &bytes.Buffer{}); code != 0 {
+		t.Fatalf("help exit code = %d, want 0", code)
+	}
+	if code := run([]string{"does-not-exist"}, &bytes.Buffer{}, &bytes.Buffer{}); code != 1 {
+		t.Fatalf("unknown subcommand exit code = %d, want 1", code)
+	}
+}
+
 func TestParseCoverageProfileComputesTotal(t *testing.T) {
 	total, err := parseCoverageProfile(strings.TrimSpace(`
 mode: set
@@ -53,6 +62,37 @@ func TestListUnformattedFilesFindsOnlyBadFiles(t *testing.T) {
 	}
 }
 
+func TestRunWithIOFmtCheckSuccess(t *testing.T) {
+	root := maintGitRepo(t)
+	if err := os.WriteFile(filepath.Join(root, "good.go"), []byte("package main\n\nfunc ok() {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	runGit(t, root, "add", "good.go")
+	var stdout bytes.Buffer
+	if err := runWithIO([]string{"fmt-check", "-repo", root}, &stdout, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(stdout.String(), "gofmt check passed") {
+		t.Fatalf("unexpected stdout: %q", stdout.String())
+	}
+}
+
+func TestRunWithIOFmtCheckFailure(t *testing.T) {
+	root := maintGitRepo(t)
+	if err := os.WriteFile(filepath.Join(root, "bad.go"), []byte("package main\nfunc bad( ) {}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	runGit(t, root, "add", "bad.go")
+	var stdout bytes.Buffer
+	err := runWithIO([]string{"fmt-check", "-repo", root}, &stdout, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "gofmt check failed") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !strings.Contains(stdout.String(), "bad.go") {
+		t.Fatalf("unexpected stdout: %q", stdout.String())
+	}
+}
+
 func TestRunWithIOCoverageCheck(t *testing.T) {
 	root := t.TempDir()
 	profile := filepath.Join(root, "coverage.out")
@@ -90,4 +130,13 @@ func TestRunWithIOHelp(t *testing.T) {
 	if !strings.Contains(stderr.String(), "convex-go-maint") {
 		t.Fatalf("unexpected help: %q", stderr.String())
 	}
+}
+
+func maintGitRepo(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	runGit(t, root, "init", "-b", "main")
+	runGit(t, root, "config", "user.name", "Test User")
+	runGit(t, root, "config", "user.email", "test@example.com")
+	return root
 }

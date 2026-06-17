@@ -37,6 +37,8 @@ func runWithIO(args []string, stdout, stderr io.Writer) error {
 		return runFmtCheck(args[1:], stdout, stderr)
 	case "coverage-check":
 		return runCoverageCheck(args[1:], stdout, stderr)
+	case "release-check":
+		return runReleaseCheck(args[1:], stdout, stderr)
 	case "-h", "--help", "help":
 		writeUsage(stderr)
 		return flag.ErrHelp
@@ -178,4 +180,5 @@ func writeUsage(w io.Writer) {
 	_, _ = fmt.Fprintln(w, "Usage:")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint fmt-check")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90")
+	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint release-check -version=0.1.0 -notes-out=release-notes.md")
 }
