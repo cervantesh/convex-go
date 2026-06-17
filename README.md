@@ -333,8 +333,11 @@ The v0 generator discovers exported `query`, `mutation`, `action`,
 `internalQuery`, `internalMutation`, and `internalAction` declarations in
 `.ts`, `.tsx`, `.js`, and `.jsx` files. It writes deterministic Go variables
 using `NewQueryReference`, `NewMutationReference`, and `NewActionReference`.
-Generated refs default to `map[string]any` args and `any` results so users can
-add narrower handwritten refs where they need stronger Go types.
+Generated refs keep `map[string]any` args today. Results stay `any` unless the
+handler result is an obvious literal shape the generator can infer safely, such
+as `[]`, `{}`, `true`, `"text"`, or a numeric literal. Anything less explicit
+stays generic so users can add narrower handwritten refs where they need
+stronger Go types.
 
 Use `-dry-run` to print generated code without writing a file, or `-check` in
 CI to fail when the checked-in generated file is stale.

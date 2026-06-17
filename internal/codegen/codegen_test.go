@@ -59,7 +59,7 @@ export const shouldNotAppear = query({});
 		`var InternalAdminAudit = convex.NewQueryReference[map[string]any, any]("internal/admin:audit")`,
 		`var InternalAdminRebuild = convex.NewMutationReference[map[string]any, any]("internal/admin:rebuild")`,
 		`var JobsDailyRun = convex.NewActionReference[map[string]any, any]("jobs/daily:run")`,
-		`var MessagesList = convex.NewQueryReference[map[string]any, any]("messages:list")`,
+		`var MessagesList = convex.NewQueryReference[map[string]any, []any]("messages:list")`,
 		`var MessagesSend = convex.NewMutationReference[map[string]any, any]("messages:send")`,
 	} {
 		if !strings.Contains(body, want) {
@@ -228,10 +228,10 @@ export const alpha = query({});
 		t.Fatal(err)
 	}
 	want := []functionRef{
-		{ModulePath: "alpha", Name: "default", Kind: "query", VarName: "AlphaDefault"},
-		{ModulePath: "alpha/beta", Name: "run", Kind: "action", VarName: "AlphaBetaRun"},
-		{ModulePath: "zeta", Name: "alpha", Kind: "query", VarName: "ZetaAlpha"},
-		{ModulePath: "zeta", Name: "zebra", Kind: "mutation", VarName: "ZetaZebra"},
+		{ModulePath: "alpha", Name: "default", Kind: "query", VarName: "AlphaDefault", ResultType: ""},
+		{ModulePath: "alpha/beta", Name: "run", Kind: "action", VarName: "AlphaBetaRun", ResultType: ""},
+		{ModulePath: "zeta", Name: "alpha", Kind: "query", VarName: "ZetaAlpha", ResultType: ""},
+		{ModulePath: "zeta", Name: "zebra", Kind: "mutation", VarName: "ZetaZebra", ResultType: ""},
 	}
 	if len(refs) != len(want) {
 		t.Fatalf("expected %d refs, got %#v", len(want), refs)
