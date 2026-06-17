@@ -426,6 +426,10 @@ Most applications should stay with `NewClient`. `NewHTTPClient` and
 integrations that need to drain protocol messages and feed server messages
 manually.
 
+Practical user-facing recipes for auth rotation, admin auth, subscription
+lifecycle, pagination, and typed references live in
+[docs/RECIPES.md](docs/RECIPES.md).
+
 ## Current API
 
 Implemented:
@@ -455,6 +459,10 @@ limits. The offline compatibility fixture process and source inventory are
 documented in [docs/CONFORMANCE.md](docs/CONFORMANCE.md). Package layout and
 advanced API boundaries are documented in
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+Community usage recipes:
+
+- [docs/RECIPES.md](docs/RECIPES.md)
 
 Maintainer workflow docs:
 
