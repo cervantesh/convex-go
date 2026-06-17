@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version without a leading v, for example 0.1.1 or 0.2.0-rc.1
+        required: true
+        type: string
+      target:
+        description: Branch or commit to release
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.3
+        with:
+          ref: ${{ inputs.target }}
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v6.4.0
+        with:
+          go-version: stable
+          check-latest: true
+          cache: true
+
+      - name: Verify release metadata
+        run: go run ./cmd/convex-go-maint release-check -version=${{ inputs.version }} -notes-out=release-notes.md
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push tag
+        run: |
+          git tag -a v${{ inputs.version }} -m v${{ inputs.version }}
+          git push origin v${{ inputs.version }}
+
+      - name: Publish prerelease
+        if: contains(inputs.version, '-')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create v${{ inputs.version }} --verify-tag --repo ${{ github.repository }} --title v${{ inputs.version }} --prerelease --notes-file release-notes.md
+
+      - name: Publish release
+        if: ${{ !contains(inputs.version, '-') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create v${{ inputs.version }} --verify-tag --repo ${{ github.repository }} --title v${{ inputs.version }} --notes-file release-notes.md

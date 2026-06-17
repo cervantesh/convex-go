@@ -311,6 +311,15 @@ func TestCommunityReadinessFilesExist(t *testing.T) {
 			"Release Checklist",
 			"Version",
 			"CHANGELOG.md",
+			"Automated Release Workflow",
+			"pre-v1 prerelease",
+		},
+		".github/workflows/release.yml": {
+			"workflow_dispatch",
+			"go run ./cmd/convex-go-maint release-check",
+			"gh release create",
+			"git tag -a",
+			"release-notes.md",
 		},
 		".github/ISSUE_TEMPLATE/bug_report.md": {
 			"Go version",
