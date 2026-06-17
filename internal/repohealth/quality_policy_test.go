@@ -10,25 +10,38 @@ import (
 func TestQualityPolicyDocumentsRepeatableGates(t *testing.T) {
 	body := readTextFile(t, "docs/maintainers/QUALITY.md")
 	for _, want := range []string{
-		"go test ./...",
-		"go test ./... -race -count=1",
-		"go vet ./...",
-		"golangci-lint run --timeout=5m",
+		"GitHub Actions is the authoritative quality gate",
+		".github/workflows/ci.yml",
+		"workflow_dispatch",
+		"pushes to `main`",
 		"go run ./cmd/convex-go-maint fmt-check",
 		"go test -json ./... > test-report.out",
 		`go test "-coverprofile=coverage.out" ./...`,
 		"go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90",
-		"sonar-scanner -Dsonar.host.url=<your-sonarqube-host>",
 		"coverage >=90%",
 		"sonar.go.coverage.reportPaths=coverage.out",
 		"sonar.go.tests.reportPaths=test-report.out",
 		"sonar.go.golangci-lint.reportPaths=golangci-report.json",
+		"SONAR_TOKEN",
+		"SONAR_HOST_URL",
+		"SonarSource/sonarqube-scan-action@v8.2.0",
+		"SonarSource/sonarqube-quality-gate-action@v1.2.0",
+		"pollingTimeoutSec: 600",
+		"Optional Local Debugging",
 		"Optional Live Integration Workflow",
 		"workflow_dispatch",
 		"LIVE_INTEGRATION.md",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
+		}
+	}
+	for _, blocked := range []string{
+		"sonar-scanner -Dsonar.host.url=<your-sonarqube-host>",
+		"Run the full local quality gates before opening a PR",
+	} {
+		if strings.Contains(body, blocked) {
+			t.Fatalf("docs/maintainers/QUALITY.md must not document workstation-first quality flow %q", blocked)
 		}
 	}
 }
@@ -79,6 +92,15 @@ func TestSonarReportPathsAreGeneratedAndUploaded(t *testing.T) {
 		}
 		if !strings.Contains(workflow, "if-no-files-found: error") {
 			t.Fatal(".github/workflows/ci.yml must fail artifact upload when quality reports are missing")
+		}
+	}
+	for _, want := range []string{
+		"SonarSource/sonarqube-scan-action@v8.2.0",
+		"SonarSource/sonarqube-quality-gate-action@v1.2.0",
+		"pollingTimeoutSec: 600",
+	} {
+		if !strings.Contains(workflow, want) {
+			t.Fatalf(".github/workflows/ci.yml must publish Sonar with %q", want)
 		}
 	}
 }
@@ -177,10 +199,13 @@ func TestRepositoryDeclaresTextNormalization(t *testing.T) {
 func TestCIIncludesRepositoryHygieneGates(t *testing.T) {
 	workflow := readTextFile(t, ".github/workflows/ci.yml")
 	for _, want := range []string{
+		"workflow_dispatch:",
 		"permissions:",
 		"contents: read",
 		"check-latest: true",
 		"needs: smoke",
+		"fetch-depth: 0",
+		"git diff --check",
 		"go test ./... -count=1",
 		"go test ./... -race -count=1",
 		"go test ./... -shuffle=on -count=1",
@@ -189,6 +214,9 @@ func TestCIIncludesRepositoryHygieneGates(t *testing.T) {
 		"go mod tidy -diff",
 		"govulncheck ./...",
 		"go run ./cmd/convex-go-maint fmt-check",
+		"SonarSource/sonarqube-scan-action@v8.2.0",
+		"SonarSource/sonarqube-quality-gate-action@v1.2.0",
+		"pollingTimeoutSec: 600",
 	} {
 		if !strings.Contains(workflow, want) {
 			t.Fatalf(".github/workflows/ci.yml must contain %q", want)
@@ -204,25 +232,36 @@ func TestCIIncludesRepositoryHygieneGates(t *testing.T) {
 func TestQualityDocsIncludeRepositoryHygieneGates(t *testing.T) {
 	body := readTextFile(t, "docs/maintainers/QUALITY.md")
 	for _, want := range []string{
+		"GitHub Actions is the authoritative quality gate",
+		"`CI` workflow runs on `pull_request`, pushes to `main`, and manual\n`workflow_dispatch`",
+		"go run ./cmd/convex-go-maint fmt-check",
+		"go mod verify",
+		"git diff --check",
 		"go run ./cmd/convex-go-maint fmt-check",
 		"go test ./... -count=1",
 		"go test ./... -race -count=1",
 		"go test ./... -shuffle=on -count=1",
 		"go vet ./...",
-		"golangci-lint run --timeout=5m",
+		"golangci-lint run --timeout=5m --output.json.path=golangci-report.json",
 		"govulncheck ./...",
-		"go mod verify",
 		"go mod tidy -diff",
-		"git diff --check",
 		"go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90",
 		"Linux, macOS, and Windows",
 		"Ubuntu quality job",
+		"SONAR_TOKEN",
+		"SONAR_HOST_URL",
+		"SonarSource/sonarqube-scan-action@v8.2.0",
+		"SonarSource/sonarqube-quality-gate-action@v1.2.0",
+		"Optional Local Debugging",
 		"Live Integration",
 		"preflight environment check",
 	} {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/maintainers/QUALITY.md must document %q", want)
 		}
+	}
+	if strings.Contains(body, "sonar-scanner -Dsonar.host.url=<your-sonarqube-host>") {
+		t.Fatal("docs/maintainers/QUALITY.md must not tell maintainers to run Sonar from a workstation")
 	}
 }
 
@@ -304,6 +343,20 @@ func TestCIUsesPinnedGolangCILintV2(t *testing.T) {
 	}
 	if strings.Contains(workflow, "golangci/golangci-lint-action") {
 		t.Fatalf(".github/workflows/ci.yml must not use golangci-lint-action because it installed a v1 binary without --output.json.path support")
+	}
+}
+
+func TestCIUsesPinnedSonarActions(t *testing.T) {
+	workflow := readTextFile(t, ".github/workflows/ci.yml")
+	for _, want := range []string{
+		"SonarSource/sonarqube-scan-action@v8.2.0",
+		"SonarSource/sonarqube-quality-gate-action@v1.2.0",
+		"SONAR_TOKEN",
+		"SONAR_HOST_URL",
+	} {
+		if !strings.Contains(workflow, want) {
+			t.Fatalf(".github/workflows/ci.yml must contain %q", want)
+		}
 	}
 }
 

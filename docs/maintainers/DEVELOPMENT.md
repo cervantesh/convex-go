@@ -55,8 +55,9 @@ and focused RED/GREEN commands.
 
 ## Quality Gates
 
-Run the quality gates in [QUALITY.md](QUALITY.md) before closing hardening
-issues. Sync and WebSocket changes must include `go test ./... -race -count=1`.
+Wait for the GitHub Actions gates in [QUALITY.md](QUALITY.md) before closing
+hardening issues. Sync and WebSocket changes must include
+`go test ./... -race -count=1` in CI.
 
 ## Definition of Done
 

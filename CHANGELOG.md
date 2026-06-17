@@ -4,7 +4,9 @@ All notable changes to this project will be documented here.
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Move Sonar scanning and quality report publication into GitHub Actions so
+  the public maintainer workflow no longer depends on workstation-local Sonar
+  runs.
 
 ## 0.1.0 - 2026-06-16
 

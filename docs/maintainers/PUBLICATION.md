@@ -9,7 +9,9 @@ artifacts.
 Before exporting:
 
 1. Merge or defer the issues intended for the public baseline.
-2. Run the quality gates from [QUALITY.md](QUALITY.md).
+2. Confirm GitHub Actions from [QUALITY.md](QUALITY.md) is green on the source
+   commit. If `SONAR_TOKEN` is configured, confirm the GitHub-hosted Sonar step
+   is green too.
 3. Confirm the public docs are accurate:
    - [../ARCHITECTURE.md](../ARCHITECTURE.md)
    - [../CONFORMANCE.md](../CONFORMANCE.md)
@@ -41,17 +43,9 @@ changes before exporting so the Git-tracked snapshot matches the working tree.
 
 ## Verify The Exported Tree
 
-Run the public baseline checks inside the exported directory:
-
-```sh
-cd ../convex-go-public
-go test ./... -count=1
-go test ./... -race -count=1
-go vet ./...
-```
-
-If the release requires lint, coverage, or Sonar reports, run the full gates
-from [QUALITY.md](QUALITY.md) before publishing.
+Push the exported tree to a staging repository or branch and let GitHub Actions
+validate it there. Treat the GitHub-hosted `CI` workflow and Sonar job as the
+publication gate, not local-only verification.
 
 ## Bootstrap The Public Repository
 
