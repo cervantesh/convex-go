@@ -24,6 +24,21 @@ main path for normal applications.
 | Advanced sync state machine | Advanced | `baseclient` is public for integrators, bindings, and alternate transports. |
 | Typed references and offline codegen | Partial | Typed refs are stable, but generated argument and result types still default to generic Go shapes. |
 
+## Public Contract
+
+The frozen root path for normal applications is:
+
+- `NewClient`
+- `Query`
+- `Mutation`
+- `Action`
+- `Subscribe`
+- `Close`
+
+`NewHTTPClient` and `NewWebSocketClient` remain public as explicit clients.
+`baseclient` remains the advanced package for framework integrations and
+protocol-facing work.
+
 ## Backed by Tests
 
 Compatibility claims in this repository should be backed by offline fixtures
@@ -43,9 +58,10 @@ rules for adding or changing compatibility claims.
   yet; generated refs default to generic Go argument and result types.
 - `WatchAll` exists as a Go-specific advanced helper. `Subscribe` remains the
   canonical Convex verb in the main API.
-- Some advanced auth and sync types remain re-exported at the root for pre-v1
-  compatibility, but new framework-style integrations should prefer
-  `github.com/cervantesh/convex-go/baseclient`.
+- Advanced sync auth token modeling and raw protocol types belong in
+  `github.com/cervantesh/convex-go/baseclient`, not the root package.
+- After the pre-v1 freeze, root-surface changes should be additive by default.
+  Any justified break should carry explicit migration notes.
 
 ## Compatibility Priorities
 

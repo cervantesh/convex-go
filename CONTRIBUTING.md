@@ -56,6 +56,37 @@ Public snapshot export is documented in [docs/maintainers/PUBLICATION.md](docs/m
 4. Preserve testability with fake transports and protocol fixtures.
 5. Keep dependency additions rare and justified in the issue or PR.
 
+## Public API Freeze
+
+The normal root package path is now frozen around:
+
+- `NewClient`
+- `Query`
+- `Mutation`
+- `Action`
+- `Subscribe`
+- `Close`
+
+The explicit clients remain public and supported:
+
+- `NewHTTPClient`
+- `NewWebSocketClient`
+
+`baseclient` remains the advanced package for framework and protocol work.
+`WatchAll` may remain as an advanced helper, but `Watch` must not become the
+primary realtime verb in the root package.
+
+After this freeze, prefer additive root API changes. If a pre-v1 breaking
+change is still justified, the issue and PR must include:
+
+- the exact public API delta
+- the API surface test update
+- docs updates for the affected public path
+- explicit migration notes in `CHANGELOG.md` or the PR body
+
+Deprecate before removal when practical. If a pre-v1 removal must happen
+without a deprecation window, document the reason and the replacement path.
+
 ## Issue Workflow
 
 Issues should include acceptance criteria. A good issue states:
