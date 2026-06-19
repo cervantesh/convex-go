@@ -139,15 +139,26 @@ func TestPublicAPISurfaceDoesNotExportRawSyncProtocol(t *testing.T) {
 	}
 }
 
+func TestPublicAPISurfaceDoesNotExportAdvancedSyncAuthModeling(t *testing.T) {
+	for _, name := range exportedDecls(t) {
+		switch name {
+		case "AdminAuthToken",
+			"AuthToken",
+			"AuthTokenFetcher",
+			"NoAuthToken",
+			"SyncUserIdentityAttributes",
+			"UserAuthToken":
+			t.Fatalf("%s belongs in package baseclient, not the root SDK package", name)
+		}
+	}
+}
+
 func TestPublicAPISurfaceExportedDeclarationsAreReviewed(t *testing.T) {
 	want := []string{
 		"ActionKind",
 		"ActionReference",
-		"AdminAuthToken",
 		"ArrayKind",
 		"ArrayValue",
-		"AuthToken",
-		"AuthTokenFetcher",
 		"BooleanKind",
 		"BooleanValue",
 		"Bytes",
@@ -192,7 +203,6 @@ func TestPublicAPISurfaceExportedDeclarationsAreReviewed(t *testing.T) {
 		"NewMutationReference",
 		"NewQueryReference",
 		"NewWebSocketClient",
-		"NoAuthToken",
 		"NullKind",
 		"NullValue",
 		"Number",
@@ -218,10 +228,8 @@ func TestPublicAPISurfaceExportedDeclarationsAreReviewed(t *testing.T) {
 		"SubscriberID",
 		"SyncAuthError",
 		"SyncMutationOption",
-		"SyncUserIdentityAttributes",
 		"TypedQuerySubscription",
 		"UDFPath",
-		"UserAuthToken",
 		"UserIdentityAttributes",
 		"UserTokenFetcher",
 		"ValidateIdentifier",
