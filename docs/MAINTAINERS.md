@@ -7,6 +7,7 @@ artifacts or private incubation history.
 Normal SDK users should start with:
 
 - [README.md](../README.md)
+- [USAGE.md](USAGE.md)
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [CONFORMANCE.md](CONFORMANCE.md)
 - [PARITY.md](PARITY.md)
