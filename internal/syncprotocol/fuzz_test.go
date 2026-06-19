@@ -8,10 +8,10 @@ import (
 
 func FuzzDecodeClientMessage(f *testing.F) {
 	for _, seed := range [][]byte{
-		[]byte(`{"type":"Event","eventType":"Trace","event":{"span":"abc"}}`),
-		[]byte(`{"type":"Mutation","requestId":3,"udfPath":"messages:send","args":[{"body":"hello"}]}`),
-		[]byte(`{"type":"Authenticate","baseVersion":5,"tokenType":"User","value":"jwt"}`),
-		[]byte(`{"type":"Unknown"}`),
+		[]byte("{\"type\":\"Event\",\"eventType\":\"Trace\",\"event\":{\"span\":\"abc\"}}"),
+		[]byte("{\"type\":\"Mutation\",\"requestId\":3,\"udfPath\":\"messages:send\",\"args\":[{\"body\":\"hello\"}]}"),
+		[]byte("{\"type\":\"Authenticate\",\"baseVersion\":5,\"tokenType\":\"User\",\"value\":\"jwt\"}"),
+		[]byte("{\"type\":\"Unknown\"}"),
 	} {
 		f.Add(seed)
 	}
@@ -43,10 +43,10 @@ func FuzzDecodeClientMessage(f *testing.F) {
 
 func FuzzDecodeServerMessage(f *testing.F) {
 	for _, seed := range [][]byte{
-		[]byte(`{"type":"Ping"}`),
-		[]byte(`{"type":"AuthError","error":"bad auth","baseVersion":10,"authUpdateAttempted":false}`),
-		[]byte(`{"type":"MutationResponse","requestId":8,"success":true,"result":{"ok":true},"ts":"AQAAAAAAAAA=","logLines":["wire"]}`),
-		[]byte(`{"type":"Unknown"}`),
+		[]byte("{\"type\":\"Ping\"}"),
+		[]byte("{\"type\":\"AuthError\",\"error\":\"bad auth\",\"baseVersion\":10,\"authUpdateAttempted\":false}"),
+		[]byte("{\"type\":\"MutationResponse\",\"requestId\":8,\"success\":true,\"result\":{\"ok\":true},\"ts\":\"AQAAAAAAAAA=\",\"logLines\":[\"wire\"]}"),
+		[]byte("{\"type\":\"Unknown\"}"),
 	} {
 		f.Add(seed)
 	}
@@ -78,10 +78,10 @@ func FuzzDecodeServerMessage(f *testing.F) {
 
 func FuzzSyncTimestampJSON(f *testing.F) {
 	for _, seed := range [][]byte{
-		[]byte(`"AQAAAAAAAAA="`),
-		[]byte(`"_________38="`),
-		[]byte(`"bad"`),
-		[]byte(`1`),
+		[]byte("\"AQAAAAAAAAA=\""),
+		[]byte("\"_________38=\""),
+		[]byte("\"bad\""),
+		[]byte("1"),
 	} {
 		f.Add(seed)
 	}
@@ -110,7 +110,7 @@ func compactJSONSync(t *testing.T, raw []byte) []byte {
 	t.Helper()
 	var buf bytes.Buffer
 	if err := json.Compact(&buf, raw); err != nil {
-		t.Fatalf("json.Compact(%q): %v", raw, err)
+		t.Fatalf("json.Compact(%q): %v", string(raw), err)
 	}
 	return append([]byte(nil), buf.Bytes()...)
 }
