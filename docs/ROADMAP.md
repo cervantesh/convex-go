@@ -1,68 +1,82 @@
-# Roadmap To An Official Convex Go Client
+# Roadmap
 
-Date baseline: June 17, 2026.
+This roadmap tracks the community-first path from the current public Go client
+to a Convex-adoptable official client.
 
-Convex still documents Go through the OpenAPI / other-languages path rather
-than as a first-party client. This roadmap keeps the strategy community-first:
-build the strongest public Go client first, then make official adoption easy if
-Convex chooses it.
+## Current status
 
-## Public API Freeze
+As of 2026-06-19, Milestone 0 is complete. This public repository is now the
+source of truth for the module path, roadmap, issues, CI, tags, and releases.
 
-The main public path is:
+- `github.com/cervantesh/convex-go` is the public module path.
+- `v0.1.0` already exists as a public tag.
+- GitHub Actions already covers cross-platform CI, release automation, live
+  integration scaffolding, Sonar report generation, Dependabot, and CodeQL.
+- The public issue tracker and versioned docs now live in this repository.
 
-- `convex.NewClient`
-- `Client.Query`
-- `Client.Mutation`
-- `Client.Action`
-- `Client.Subscribe`
-- `Client.Close`
+Historical incubation copies may still exist as archives, but they should not
+receive forward-looking roadmap updates, release tags, or active maintenance.
 
-Explicit clients remain public and supported:
+Umbrella tracker: #19
 
-- `convex.NewHTTPClient`
-- `convex.NewWebSocketClient`
+## Frozen public contract
 
-The advanced package remains public but secondary:
+The normal user path stays centered on:
 
-- `github.com/cervantesh/convex-go/baseclient`
+- `NewClient`
+- `Query`
+- `Mutation`
+- `Action`
+- `Subscribe`
+- `Close`
 
-## Milestone 0 - Public Truth
+The explicit clients remain public:
 
-Goal: remove credibility blockers in the public repository surface.
+- `NewHTTPClient`
+- `NewWebSocketClient`
 
-Completed in this repository:
+`baseclient` remains the advanced path. `Subscribe` remains the canonical
+realtime verb. New root-surface changes after the freeze milestone must be
+additive or carry explicit pre-v1 migration notes.
 
-- module path, README, and repository naming now align on
-  `github.com/cervantesh/convex-go`
-- `v0.1.0` release metadata, release workflow, and annotated tag flow exist in
-  the repository
-- Sonar, CodeQL, Dependabot, dependency review, and secret scanning now live in
-  GitHub-managed workflows and settings
+## Milestone 0 - Public Source of Truth
 
-## Milestone 1 - API Stability
-
-Goal: make the SDK adoptable without constant drift.
-
-Completed in this repository:
-
-- API surface snapshot and repohealth guards for the root package and
-  `baseclient`
-- connection-state observability in the root client and explicit realtime client
-- public auth callback for root and realtime clients
-- README, `pkg.go.dev`, and public docs split into concise onboarding plus
-  deeper usage docs
-
-## Milestone 2 - Runtime Confidence
-
-Goal: prove the runtime behaves like a product, not just a package.
+Goal: keep the public repo as the only active source of truth for roadmap,
+release, and automation work.
 
 Completed in this repository:
 
-- coverage, race, shuffle, vet, vulncheck, lint, and Sonar report generation in
-  CI
-- deterministic subscription soak coverage and connection-state tests
-- live integration workflow for a sample Convex deployment
+- #20 Promote the public repo as the source of truth and retire incubation
+  drift.
+
+## Milestone 1 - SDK Freeze
+
+Goal: close remaining parity gaps and freeze the public Go contract.
+
+Completed in this repository:
+
+- #21 Public auth callback parity on root clients
+- #22 Public connection state observability on root and realtime clients
+- #23 Rewrite public onboarding around a shorter README and stable doc split
+- #24 Freeze the public SDK surface and deprecation policy pre-v1
+- #25 Harden root and baseclient boundaries for advanced auth and sync exports
+- #26 Polish pkg.go.dev and compiled examples for the frozen public API
+- #27 Close the public parity gap in errors and auth contracts
+- #28 Typed references and offline codegen v1
+- #29 Define a public logging and observability story for the SDK
+
+Remaining:
+
+- None. Milestone 1 is complete.
+
+## Milestone 2 - Runtime Reliability
+
+Goal: prove runtime safety with live integration, fuzzing, soak coverage, leak
+budgets, and performance baselines.
+
+Completed in this repository:
+
+- #35 Document and maintain a Go and backend compatibility matrix
 
 Remaining:
 
@@ -110,15 +124,28 @@ Completed in this repository:
 - #48 Define the handoff gate that must be met before official adoption work
   begins
 
+Remaining:
+
+- None. Milestone 4 is complete.
+
 ## Milestone 5 - Official Handoff
 
-Goal: execute an official transfer only after Convex accepts it.
-
-These items stay open until an external agreement exists:
+Goal: execute the official handoff only after Convex explicitly agrees to
+adopt the client.
 
 - #49 Choose the handoff form after Convex accepts adoption
-- #50 Execute the module path migration to
-  `github.com/get-convex/convex-go` when approved
+- #50 Execute the module path migration to `github.com/get-convex/convex-go`
+  when approved
 - #51 Publish transition releases under the legacy and official namespaces
 - #52 Update docs, demos, and official links after handoff
 - #53 Publish the post-handoff v1 roadmap for the official Go client
+
+## Working rules
+
+- The strategy remains community-first until Convex explicitly accepts adoption
+  work.
+- Milestone 5 stays blocked on Convex agreement plus the Milestone 4 handoff
+  gate.
+- Work lands through issues and PRs; avoid direct pushes to `main`.
+- Public claims about parity or readiness must stay backed by versioned docs,
+  tests, and public tracker evidence.
