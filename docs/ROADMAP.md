@@ -119,10 +119,10 @@ Completed in this repository:
 - #44 Define governance and maintainer policy for a Convex-adoptable Go client
 - #45 Draft a namespace transition readiness plan for
   `github.com/get-convex/convex-go`
+- #46 Request official linking as the recommended community Go client
 
 Remaining:
 
-- #46 Request official linking as the recommended community Go client
 - #47 Draft the official adoption proposal and ownership options for Convex
 - #48 Define the handoff gate that must be met before official adoption work
   begins
