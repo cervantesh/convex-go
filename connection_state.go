@@ -13,9 +13,9 @@ const (
 	// ConnectionPhaseDisconnected reports that the realtime transport is not connected.
 	ConnectionPhaseDisconnected ConnectionPhase = "Disconnected"
 	// ConnectionPhaseConnecting reports that the realtime transport is dialing.
-	ConnectionPhaseConnecting   ConnectionPhase = "Connecting"
+	ConnectionPhaseConnecting ConnectionPhase = "Connecting"
 	// ConnectionPhaseConnected reports that the realtime transport is connected.
-	ConnectionPhaseConnected    ConnectionPhase = "Connected"
+	ConnectionPhaseConnected ConnectionPhase = "Connected"
 	// ConnectionPhaseReconnecting reports that the realtime transport is retrying.
 	ConnectionPhaseReconnecting ConnectionPhase = "Reconnecting"
 )
