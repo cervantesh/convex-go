@@ -37,6 +37,36 @@ func ExampleClient_queryMutationAction() {
 	}
 }
 
+func ExampleClient_overview() {
+	deploymentURL := os.Getenv("CONVEX_URL")
+	if deploymentURL == "" {
+		return
+	}
+	ctx := context.Background()
+	client, err := convex.NewClient(deploymentURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close() }()
+
+	if _, err := client.Query(ctx, "messages:list", map[string]any{"limit": convex.Number(10)}); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := client.Mutation(ctx, "messages:send", map[string]any{"body": "Hello from Go"}); err != nil {
+		log.Fatal(err)
+	}
+
+	subscription, err := client.Subscribe(ctx, "messages:list", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = subscription.Close() }()
+
+	if _, err := subscription.Next(ctx); err != nil {
+		log.Fatal(err)
+	}
+}
+
 func ExampleNewHTTPClient() {
 	deploymentURL := os.Getenv("CONVEX_URL")
 	if deploymentURL == "" {
@@ -65,6 +95,23 @@ func ExampleClient_auth() {
 	if err := client.SetAdminAuth("deploy-or-admin-key", convex.UserIdentityAttributes{
 		"email": "ada@example.com",
 		"name":  "Ada Lovelace",
+	}); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func ExampleClient_authCallback() {
+	client, err := convex.NewClient("https://happy-animal-123.convex.cloud")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close() }()
+
+	if err := client.SetAuthCallback(func(forceRefresh bool) (string, error) {
+		if forceRefresh {
+			return "fresh-jwt", nil
+		}
+		return "cached-jwt", nil
 	}); err != nil {
 		log.Fatal(err)
 	}
@@ -290,6 +337,19 @@ func ExampleClient_watchAll() {
 		log.Fatal(err)
 	}
 	fmt.Println(snapshot.Len())
+}
+
+func ExampleClient_connectionState() {
+	client, err := convex.NewClient("https://happy-animal-123.convex.cloud")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() { _ = client.Close() }()
+
+	stop := client.SubscribeToConnectionState(func(state convex.ConnectionState) {
+		fmt.Printf("phase=%s retries=%d\n", state.Phase, state.ConnectionRetries)
+	})
+	defer stop()
 }
 
 func Example_valueMapping() {
