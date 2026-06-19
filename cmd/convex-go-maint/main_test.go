@@ -122,6 +122,21 @@ func TestRunWithIOCoverageCheckFailure(t *testing.T) {
 	}
 }
 
+func TestRunWithIOCoverageCheckUsesDisplayedTenthsAtThreshold(t *testing.T) {
+	root := t.TempDir()
+	profile := filepath.Join(root, "coverage.out")
+	if err := os.WriteFile(profile, []byte("mode: set\nclient.go:10.1,12.2 1799 1\nclient.go:14.1,16.2 201 0\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	var stdout bytes.Buffer
+	if err := runWithIO([]string{"coverage-check", "-coverprofile", profile, "-min", "90"}, &stdout, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(stdout.String(), "coverage 90.0% meets minimum 90.0%") {
+		t.Fatalf("unexpected stdout: %q", stdout.String())
+	}
+}
+
 func TestRunWithIOHelp(t *testing.T) {
 	var stderr bytes.Buffer
 	err := runWithIO([]string{"help"}, &bytes.Buffer{}, &stderr)
@@ -247,7 +262,7 @@ func assertPathExists(t *testing.T, path string) {
 }
 
 func assertPathMissing(t *testing.T, path string) {
-	t.Helper()
+		t.Helper()
 	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("expected %s to be missing, got %v", path, err)
 	}
