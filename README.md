@@ -62,6 +62,9 @@ func main() {
   auth, errors, values, pagination, and explicit `NewHTTPClient` /
   `NewWebSocketClient` flows.
 - [docs/RECIPES.md](docs/RECIPES.md) for cookbook-style operational patterns.
+- [examples/realtime_chat/README.md](examples/realtime_chat/README.md) for a
+  small chat-style demo application that consumes this SDK from a separate Go
+  module.
 - [docs/MIGRATION.md](docs/MIGRATION.md) for users moving from `convex-js`,
   `convex-rs`, or `convex-py`.
 - [docs/PARITY.md](docs/PARITY.md) for supported surface and current limits.
