@@ -73,6 +73,15 @@ func TestPublicAPISurfaceDoesNotExportReconnectOrTimeoutErrors(t *testing.T) {
 	}
 }
 
+func TestPublicAPISurfaceDoesNotPrematurelyExportLoggingAPI(t *testing.T) {
+	for _, name := range exportedDecls(t) {
+		switch name {
+		case "LogLevel", "Logger", "LoggerFunc", "WithLogSink", "WithLogger":
+			t.Fatalf("%s must not be exported until the SDK has an explicit public logging design", name)
+		}
+	}
+}
+
 func TestPublicAPISurfaceKeepsSubscriberIDOpaque(t *testing.T) {
 	for _, subscriberType := range []reflect.Type{
 		reflect.TypeOf(SubscriberID{}),
