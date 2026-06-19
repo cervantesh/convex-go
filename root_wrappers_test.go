@@ -71,20 +71,6 @@ func TestRootValueAndPathWrappers(t *testing.T) {
 	}
 }
 
-func TestRootSyncAuthTokenWrappers(t *testing.T) {
-	user := UserAuthToken("user-token")
-	if user.Value != "user-token" {
-		t.Fatalf("unexpected user auth token: %#v", user)
-	}
-	admin := AdminAuthToken("admin-token", SyncUserIdentityAttributes{Issuer: "issuer", Subject: "subject"})
-	if admin.Value != "admin-token" || admin.ActingAs == nil || admin.ActingAs.TokenIdentifier != "issuer|subject" {
-		t.Fatalf("unexpected admin auth token: %#v", admin)
-	}
-	if none := NoAuthToken(); none.Value != "" {
-		t.Fatalf("unexpected no-auth token: %#v", none)
-	}
-}
-
 func TestRootWebSocketClientIDOption(t *testing.T) {
 	if _, err := NewWebSocketClient(context.Background(), "https://happy-animal-123.convex.cloud", WithWebSocketClientID(" ")); err == nil {
 		t.Fatal("expected invalid websocket client ID option to fail")

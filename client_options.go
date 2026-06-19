@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+
+	"github.com/cervantesh/convex-go/baseclient"
 )
 
 const Version = "0.1.0"
@@ -271,11 +273,11 @@ func cloneUserIdentityAttributes(in []UserIdentityAttributes) []UserIdentityAttr
 	return out
 }
 
-func syncIdentityAttributes(actingAs []UserIdentityAttributes) []SyncUserIdentityAttributes {
+func syncIdentityAttributes(actingAs []UserIdentityAttributes) []baseclient.SyncUserIdentityAttributes {
 	if len(actingAs) == 0 {
 		return nil
 	}
-	out := make([]SyncUserIdentityAttributes, 0, len(actingAs))
+	out := make([]baseclient.SyncUserIdentityAttributes, 0, len(actingAs))
 	for _, attrs := range actingAs {
 		if attrs == nil {
 			continue
@@ -284,7 +286,7 @@ func syncIdentityAttributes(actingAs []UserIdentityAttributes) []SyncUserIdentit
 		if err != nil {
 			continue
 		}
-		var identity SyncUserIdentityAttributes
+		var identity baseclient.SyncUserIdentityAttributes
 		if err := json.Unmarshal(data, &identity); err != nil {
 			continue
 		}

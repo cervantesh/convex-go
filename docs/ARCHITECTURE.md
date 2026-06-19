@@ -7,9 +7,9 @@ directories, so files that share the public `convex` API live together in the
 repository root.
 
 The root keeps the public client facade, explicit HTTP and realtime clients,
-value model, error model, and a small pre-v1 compatibility wrapper set for
-advanced sync auth concepts under one import path. Protocol and transport
-implementation details live below `internal`.
+value model, and error model under one import path. Advanced sync auth tokens
+and protocol-facing auth callbacks live in `baseclient`. Protocol and
+transport implementation details live below `internal`.
 
 ## Primary user APIs
 
