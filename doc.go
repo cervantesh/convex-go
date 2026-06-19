@@ -31,9 +31,8 @@
 // Advanced protocol APIs:
 //   - github.com/cervantesh/convex-go/baseclient exposes the deterministic
 //     sync state machine for framework integrations and protocol work.
-//   - The root package keeps a small pre-v1 compatibility wrapper set for
-//     advanced sync auth tokens, but new auth callback and protocol-facing
-//     work should prefer package baseclient directly.
+//   - Advanced sync auth token modeling and protocol-facing auth callbacks live
+//     in package baseclient rather than the root package.
 //   - Raw wire messages, codecs, reconnect loops, and the low-level WebSocket
 //     manager live under internal packages. Most applications should prefer
 //     Client, HTTPClient, and WebSocketClient.
