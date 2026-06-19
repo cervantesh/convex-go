@@ -313,6 +313,59 @@ func TestMaintainerDevelopmentDocsDefineAPIFreezeWorkflow(t *testing.T) {
 	}
 }
 
+func TestRoadmapTracksPublicRepoAsSourceOfTruth(t *testing.T) {
+	body := readTextFile(t, "docs/ROADMAP.md")
+	for _, want := range []string{
+		"Milestone 0 is complete",
+		"source of truth",
+		"Completed in this repository",
+		"Remaining:",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("docs/ROADMAP.md must document %q", want)
+		}
+	}
+	for _, blocked := range []string{
+		"The remaining Milestone 0 gap",
+		"must stop drifting",
+		"convex-go-incubation",
+	} {
+		if strings.Contains(body, blocked) {
+			t.Fatalf("docs/ROADMAP.md must not document stale source-of-truth text %q", blocked)
+		}
+	}
+}
+
+func TestVersionedDocsDoNotNameOldIncubationRepo(t *testing.T) {
+	root := repoRoot(t)
+	paths := []string{
+		"README.md",
+		"CONTRIBUTING.md",
+	}
+	if err := filepath.WalkDir(filepath.Join(root, "docs"), func(path string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || filepath.Ext(path) != ".md" {
+			return nil
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		paths = append(paths, filepath.ToSlash(rel))
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range paths {
+		body := readTextFile(t, path)
+		if strings.Contains(body, "convex-go-incubation") {
+			t.Fatalf("%s must not name the old incubation repository", path)
+		}
+	}
+}
+
 func TestReleaseChecklistReferencesCurrentVersionFile(t *testing.T) {
 	body := readTextFile(t, "docs/maintainers/RELEASE.md")
 	if !strings.Contains(body, "client_options.go") {

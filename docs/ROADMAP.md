@@ -5,16 +5,17 @@ to a Convex-adoptable official client.
 
 ## Current status
 
-As of 2026-06-17, the public repo already has several Milestone 0 pieces in
-place:
+As of 2026-06-19, Milestone 0 is complete. This public repository is now the
+source of truth for the module path, roadmap, issues, CI, tags, and releases.
 
 - `github.com/cervantesh/convex-go` is the public module path.
 - `v0.1.0` already exists as a public tag.
 - GitHub Actions already covers cross-platform CI, release automation, live
   integration scaffolding, Sonar report generation, Dependabot, and CodeQL.
+- The public issue tracker and versioned docs now live in this repository.
 
-The remaining Milestone 0 gap is source-of-truth cleanup: the public repo and
-the older incubation line must stop drifting.
+Historical incubation copies may still exist as archives, but they should not
+receive forward-looking roadmap updates, release tags, or active maintenance.
 
 Umbrella tracker: #19
 
@@ -40,8 +41,10 @@ additive or carry explicit pre-v1 migration notes.
 
 ## Milestone 0 - Public Source of Truth
 
-Goal: finish the move from incubation history to the public repo as the only
-source of truth.
+Goal: keep the public repo as the only active source of truth for roadmap,
+release, and automation work.
+
+Completed in this repository:
 
 - #20 Promote the public repo as the source of truth and retire incubation
   drift.
@@ -50,11 +53,16 @@ source of truth.
 
 Goal: close remaining parity gaps and freeze the public Go contract.
 
+Completed in this repository:
+
 - #21 Public auth callback parity on root clients
 - #22 Public connection state observability on root and realtime clients
 - #23 Rewrite public onboarding around a shorter README and stable doc split
 - #24 Freeze the public SDK surface and deprecation policy pre-v1
 - #25 Harden root and baseclient boundaries for advanced auth and sync exports
+
+Remaining:
+
 - #26 Polish pkg.go.dev and compiled examples for the frozen public API
 - #27 Close the public parity gap in errors and auth contracts
 - #28 Typed references and offline codegen v1

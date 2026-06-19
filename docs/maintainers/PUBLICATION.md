@@ -4,6 +4,10 @@ This guide is for cutting a clean public snapshot that keeps the public history
 small, the docs readable, and the repository free of workstation-specific
 artifacts.
 
+The tracked files in this public repository are the source of truth for that
+snapshot. Do not derive release or publication state from an older incubation
+copy.
+
 ## Preconditions
 
 Before exporting:
