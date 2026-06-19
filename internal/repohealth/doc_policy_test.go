@@ -255,6 +255,7 @@ func TestParityDocsStayStatusFocused(t *testing.T) {
 	for _, want := range []string{
 		"Compatibility Status",
 		"Supported Surface",
+		"Public Contract",
 		"Backed by Tests",
 		"Known Limits",
 	} {
@@ -268,6 +269,46 @@ func TestParityDocsStayStatusFocused(t *testing.T) {
 	} {
 		if strings.Contains(body, blocked) {
 			t.Fatalf("docs/PARITY.md must not document %q", blocked)
+		}
+	}
+}
+
+func TestContributingDocsDefinePreV1APIFreeze(t *testing.T) {
+	body := readTextFile(t, "CONTRIBUTING.md")
+	for _, want := range []string{
+		"## Public API Freeze",
+		"`NewClient`",
+		"`Subscribe`",
+		"`NewHTTPClient`",
+		"`NewWebSocketClient`",
+		"`baseclient`",
+		"`WatchAll`",
+		"`Watch`",
+		"API surface test update",
+		"migration notes",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("CONTRIBUTING.md must document %q", want)
+		}
+	}
+}
+
+func TestMaintainerDevelopmentDocsDefineAPIFreezeWorkflow(t *testing.T) {
+	body := readTextFile(t, "docs/maintainers/DEVELOPMENT.md")
+	for _, want := range []string{
+		"## Public API Freeze Workflow",
+		"`NewClient`",
+		"`Subscribe`",
+		"`NewHTTPClient`",
+		"`NewWebSocketClient`",
+		"`baseclient`",
+		"`WatchAll`",
+		"`Watch`",
+		"`api_surface_test.go`",
+		"`CHANGELOG.md`",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("docs/maintainers/DEVELOPMENT.md must document %q", want)
 		}
 	}
 }
