@@ -34,12 +34,12 @@ func FuzzParseFunctionPath(f *testing.F) {
 
 func FuzzValueJSONRoundTrip(f *testing.F) {
 	for _, seed := range [][]byte{
-		[]byte(`null`),
-		[]byte(`{"$integer":"AQAAAAAAAAA="}`),
-		[]byte(`{"$float":"AAAAAAAA8D8="}`),
-		[]byte(`{"payload":{"$bytes":"YWJj"},"nested":[true,false,null]}`),
-		[]byte(`{"name":"Ada","active":true,"count":{"$integer":"AgAAAAAAAAA="}}`),
-		[]byte(`{"bad":{"$float":1}}`),
+		[]byte("null"),
+		[]byte("{\"$integer\":\"AQAAAAAAAAA=\"}"),
+		[]byte("{\"$float\":\"AAAAAAAA8D8=\"}"),
+		[]byte("{\"payload\":{\"$bytes\":\"YWJj\"},\"nested\":[true,false,null]}"),
+		[]byte("{\"name\":\"Ada\",\"active\":true,\"count\":{\"$integer\":\"AgAAAAAAAAA=\"}}"),
+		[]byte("{\"bad\":{\"$float\":1}}"),
 	} {
 		f.Add(seed)
 	}
@@ -77,7 +77,8 @@ func compactJSONCore(t *testing.T, raw []byte) []byte {
 	t.Helper()
 	var buf bytes.Buffer
 	if err := json.Compact(&buf, raw); err != nil {
-		t.Fatalf("json.Compact(%q): %v", raw, err)
+		f := string(raw)
+		t.Fatalf("json.Compact(%q): %v", f, err)
 	}
 	return append([]byte(nil), buf.Bytes()...)
 }
