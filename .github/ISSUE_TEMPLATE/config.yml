@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Convex product docs and community
+    url: https://www.convex.dev/community
+    about: Use this for general Convex product questions that are not specific Go SDK bugs.
+  - name: Private security reporting
+    url: https://github.com/cervantesh/convex-go/blob/main/SECURITY.md
+    about: Follow SECURITY.md for private vulnerability reporting instead of opening a public issue.
