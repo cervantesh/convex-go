@@ -115,11 +115,11 @@ module path yet.
 
 Completed in this repository:
 
+- #43 Create a Convex adoption packet for the Go client
 - #44 Define governance and maintainer policy for a Convex-adoptable Go client
 
 Remaining:
 
-- #43 Create a Convex adoption packet for the Go client
 - #45 Draft a namespace transition readiness plan for
   `github.com/get-convex/convex-go`
 - #46 Request official linking as the recommended community Go client
