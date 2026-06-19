@@ -4,6 +4,9 @@ This index is for maintainers preparing releases, hardening quality gates, or
 cutting a clean public snapshot from the repository without carrying local-only
 artifacts or private incubation history.
 
+This public repository is the active source of truth for roadmap updates,
+tracked issues, releases, and GitHub automation.
+
 Normal SDK users should start with:
 
 - [README.md](../README.md)
