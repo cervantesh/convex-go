@@ -10,6 +10,7 @@ tracked issues, releases, and GitHub automation.
 Normal SDK users should start with:
 
 - [README.md](../README.md)
+- [ADOPTION_PACKET.md](ADOPTION_PACKET.md)
 - [USAGE.md](USAGE.md)
 - [COMPATIBILITY.md](COMPATIBILITY.md)
 - [ARCHITECTURE.md](ARCHITECTURE.md)
