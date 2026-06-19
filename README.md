@@ -61,6 +61,7 @@ func main() {
 - [docs/USAGE.md](docs/USAGE.md) for normal use with `convex.NewClient`,
   auth, errors, values, pagination, and explicit `NewHTTPClient` /
   `NewWebSocketClient` flows.
+- [docs/RECIPES.md](docs/RECIPES.md) for cookbook-style operational patterns.
 - [docs/MIGRATION.md](docs/MIGRATION.md) for users moving from `convex-js`,
   `convex-rs`, or `convex-py`.
 - [docs/PARITY.md](docs/PARITY.md) for supported surface and current limits.
