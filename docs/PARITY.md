@@ -23,7 +23,7 @@ main path for normal applications.
 | Public SDK logging hooks | Not supported | The root package intentionally does not export logger hooks or log levels yet; use connection-state callbacks and external transport instrumentation instead. |
 | Optimistic local query updates | Supported | Scoped to active realtime queries through `WithOptimisticUpdate`. |
 | Advanced sync state machine | Advanced | `baseclient` is public for integrators, bindings, and alternate transports. |
-| Typed references and offline codegen | Partial | Typed refs are stable, but generated argument and result types still default to generic Go shapes. |
+| Typed references and offline codegen | Supported | Typed refs and offline codegen are public and tested. Generated argument and result types intentionally fall back to deterministic generic Go shapes when precise offline inference is not available. |
 
 ## Public Contract
 
@@ -55,8 +55,8 @@ rules for adding or changing compatibility claims.
 - This repository validates compatibility primarily through offline fixtures
   and local test harnesses, not through a full live Convex deployment matrix in
   CI.
-- `cmd/convex-go-codegen` does not infer arbitrary TypeScript validator types
-  yet; generated refs default to generic Go argument and result types.
+- `cmd/convex-go-codegen` intentionally prefers deterministic generic Go
+  shapes when precise TypeScript validator inference is not available offline.
 - There is no public root-package logging API yet. Realtime observability is
   available through `ConnectionState`, but protocol/event logging remains an
   intentional non-goal until a smaller stable design is justified.

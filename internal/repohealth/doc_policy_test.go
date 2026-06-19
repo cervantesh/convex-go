@@ -112,6 +112,32 @@ func TestUsageDocsCoverPublicHowTo(t *testing.T) {
 	}
 }
 
+func TestTypedReferenceDocsDefineStableCodegenContract(t *testing.T) {
+	usage := readTextFile(t, "docs/USAGE.md")
+	for _, want := range []string{
+		"Typed references are a supported root-package API",
+		"cmd/convex-go-codegen",
+		"argument types default to `map[string]any`",
+		"result types use lightweight offline inference",
+		"generic Go shapes such as `any`, `[]any`, or `map[string]any`",
+		"TypeScript validator inference",
+	} {
+		if !strings.Contains(usage, want) {
+			t.Fatalf("docs/USAGE.md must document %q", want)
+		}
+	}
+
+	parity := readTextFile(t, "docs/PARITY.md")
+	for _, want := range []string{
+		"| Typed references and offline codegen | Supported |",
+		"deterministic generic Go shapes",
+	} {
+		if !strings.Contains(parity, want) {
+			t.Fatalf("docs/PARITY.md must document %q", want)
+		}
+	}
+}
+
 func TestReadmeExampleHasCompiledMirror(t *testing.T) {
 	body := readTextFile(t, "examples_test.go")
 	for _, want := range []string{
