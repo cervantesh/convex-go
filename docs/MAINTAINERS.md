@@ -20,6 +20,7 @@ Normal SDK users should start with:
 Maintainer workflow docs:
 
 - [ROADMAP.md](ROADMAP.md)
+- [maintainers/COMMUNITY.md](maintainers/COMMUNITY.md)
 - [maintainers/DEVELOPMENT.md](maintainers/DEVELOPMENT.md)
 - [maintainers/QUALITY.md](maintainers/QUALITY.md)
 - [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md)
