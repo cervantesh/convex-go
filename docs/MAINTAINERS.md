@@ -11,6 +11,7 @@ Normal SDK users should start with:
 
 - [README.md](../README.md)
 - [USAGE.md](USAGE.md)
+- [COMPATIBILITY.md](COMPATIBILITY.md)
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [CONFORMANCE.md](CONFORMANCE.md)
 - [PARITY.md](PARITY.md)

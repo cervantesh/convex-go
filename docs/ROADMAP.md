@@ -74,6 +74,12 @@ Remaining:
 Goal: prove runtime safety with live integration, fuzzing, soak coverage, leak
 budgets, and performance baselines.
 
+Completed in this repository:
+
+- #35 Document and maintain a Go and backend compatibility matrix
+
+Remaining:
+
 - #30 Expand the live integration harness to full request, auth, and reconnect
   coverage
 - #31 Add fuzz targets for values, wire protocol, and critical conversions
@@ -83,7 +89,6 @@ budgets, and performance baselines.
   history
 - #34 Add benchmarks and performance budgets for values, subscribe throughput,
   and reconnect
-- #35 Document and maintain a Go and backend compatibility matrix
 - #36 Feed live harness outcomes back into offline conformance fixtures
 
 ## Milestone 3 - Adoption
