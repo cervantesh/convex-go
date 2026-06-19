@@ -85,6 +85,13 @@ go test ./... -run TestName -count=1
 go test ./... -race -count=1
 ```
 
+Targeted fuzzing commands:
+
+```text
+go test ./internal/core -run=^$ -fuzz=Fuzz -fuzztime=10s
+go test ./internal/syncprotocol -run=^$ -fuzz=Fuzz -fuzztime=10s
+```
+
 `govulncheck` should be run with the latest patch release for the supported Go
 line. Standard library vulnerabilities are fixed by updating the Go toolchain,
 not by changing this module's dependencies.

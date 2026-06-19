@@ -76,13 +76,13 @@ budgets, and performance baselines.
 
 Completed in this repository:
 
+- #31 Add fuzz targets for values, wire protocol, and critical conversions
 - #35 Document and maintain a Go and backend compatibility matrix
 
 Remaining:
 
 - #30 Expand the live integration harness to full request, auth, and reconnect
   coverage
-- #31 Add fuzz targets for values, wire protocol, and critical conversions
 - #32 Add deterministic soak coverage for reconnect, auth refresh, and
   cancellation
 - #33 Add leak and retention budget tests for goroutines, watchers, and result
