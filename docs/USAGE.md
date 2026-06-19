@@ -104,15 +104,25 @@ compilable pagination loop.
 
 ## Typed references and code generation
 
-Typed references stay in the root package:
+Typed references are a supported root-package API:
 
 - `NewQueryReference`
 - `NewMutationReference`
 - `NewActionReference`
 
 For larger projects, `cmd/convex-go-codegen` can generate deterministic Go
-reference declarations from your Convex source tree. The generated surface
-still uses the same root client APIs.
+reference declarations from your Convex source tree.
+
+The generated surface intentionally stays Go-first and predictable:
+
+- generated refs still call the same root client APIs
+- argument types default to `map[string]any`
+- result types use lightweight offline inference for obvious literal returns
+- when precise inference is not available, generated results fall back to
+  generic Go shapes such as `any`, `[]any`, or `map[string]any`
+
+This keeps code generation deterministic and offline without promising full
+TypeScript validator inference.
 
 ## Explicit clients
 
