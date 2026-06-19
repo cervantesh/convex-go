@@ -62,6 +62,8 @@ func main() {
   auth, errors, values, pagination, and explicit `NewHTTPClient` /
   `NewWebSocketClient` flows.
 - [docs/PARITY.md](docs/PARITY.md) for supported surface and current limits.
+- [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) for supported Go versions,
+  CI matrix, and live-backend evidence.
 - [docs/CONFORMANCE.md](docs/CONFORMANCE.md) for offline compatibility
   fixtures and upstream sources.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for package boundaries and the
