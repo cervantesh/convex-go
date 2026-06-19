@@ -60,13 +60,14 @@ Completed in this repository:
 - #23 Rewrite public onboarding around a shorter README and stable doc split
 - #24 Freeze the public SDK surface and deprecation policy pre-v1
 - #25 Harden root and baseclient boundaries for advanced auth and sync exports
-
-Remaining:
-
 - #26 Polish pkg.go.dev and compiled examples for the frozen public API
 - #27 Close the public parity gap in errors and auth contracts
 - #28 Typed references and offline codegen v1
 - #29 Define a public logging and observability story for the SDK
+
+Remaining:
+
+- None. Milestone 1 is complete.
 
 ## Milestone 2 - Runtime Reliability
 
