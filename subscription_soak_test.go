@@ -2,6 +2,7 @@ package convex
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"testing"
@@ -78,6 +79,62 @@ func TestWatchAllSoakCoalescesBurstSnapshots(t *testing.T) {
 		value, ok := result.Value()
 		if !ok || value.GoValue() != want {
 			t.Fatalf("expected watcher burst %d latest value %q, got %#v", burst, want, result)
+		}
+	}
+}
+
+func TestSubscriptionSoakCanceledUnsubscribeCanRetryAcrossIterations(t *testing.T) {
+	dialer := newFakeSyncDialer()
+	client, attempt := newStartedTestWebSocketClient(t, dialer)
+	defer closeTestWebSocketClient(t, client)
+
+	for iteration := 1; iteration <= 3; iteration++ {
+		subscription, err := client.Subscribe(context.Background(), "messages:list", nil)
+		if err != nil {
+			t.Fatalf("iteration %d subscribe: %v", iteration, err)
+		}
+		add := onlyQuerySetAdd(t, decodeSentClientMessage[ModifyQuerySetMessage](t, attempt.conn.waitSent(t)))
+
+		blocked, unblock := attempt.conn.blockNextWrite()
+		cancelDuringFlush, cancel := context.WithCancel(context.Background())
+		unsubscribeDone := make(chan error, 1)
+		go func() {
+			unsubscribeDone <- subscription.Unsubscribe(cancelDuringFlush)
+		}()
+		select {
+		case <-blocked:
+		case <-time.After(time.Second):
+			t.Fatalf("iteration %d timed out waiting for blocked unsubscribe flush", iteration)
+		}
+		cancel()
+		select {
+		case err := <-unsubscribeDone:
+			if !errors.Is(err, context.Canceled) {
+				t.Fatalf("iteration %d expected canceled unsubscribe failure, got %v", iteration, err)
+			}
+		case <-time.After(time.Second):
+			t.Fatalf("iteration %d timed out waiting for canceled unsubscribe", iteration)
+		}
+
+		stillActive, cancelStillActive := context.WithTimeout(context.Background(), time.Nanosecond)
+		waitContextDone(t, stillActive)
+		if _, err := subscription.Next(stillActive); !errors.Is(err, context.DeadlineExceeded) {
+			cancelStillActive()
+			t.Fatalf("iteration %d expected subscription to remain active after failed close, got %v", iteration, err)
+		}
+		cancelStillActive()
+
+		close(unblock)
+		remove := onlyQuerySetRemove(t, decodeSentClientMessage[ModifyQuerySetMessage](t, attempt.conn.waitSent(t)))
+		if remove.QueryID != add.QueryID {
+			t.Fatalf("iteration %d unexpected remove while retrying unsubscribe: %#v", iteration, remove)
+		}
+
+		if err := subscription.Unsubscribe(context.Background()); err != nil {
+			t.Fatalf("iteration %d retry unsubscribe: %v", iteration, err)
+		}
+		if _, err := subscription.Next(context.Background()); !errors.Is(err, ErrSubscriptionClosed) {
+			t.Fatalf("iteration %d expected subscription closed after retry, got %v", iteration, err)
 		}
 	}
 }
