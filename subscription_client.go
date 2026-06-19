@@ -192,6 +192,33 @@ func (c *WebSocketClient) SetAuthContext(ctx context.Context, token string) erro
 	return c.setAuth(ctx, token, true)
 }
 
+// SetAuthCallback installs a user JWT callback for realtime auth refresh.
+// Passing nil clears any current auth.
+func (c *WebSocketClient) SetAuthCallback(fetcher UserTokenFetcher) error {
+	ctx, cancel := boundedRealtimeControlContext()
+	defer cancel()
+	return c.SetAuthCallbackContext(ctx, fetcher)
+}
+
+// SetAuthCallbackContext installs a user JWT callback and uses ctx for the
+// resulting auth flush.
+func (c *WebSocketClient) SetAuthCallbackContext(ctx context.Context, fetcher UserTokenFetcher) error {
+	return c.setAuthCallback(ctx, fetcher, true)
+}
+
+func (c *WebSocketClient) setAuthCallback(ctx context.Context, fetcher UserTokenFetcher, flush bool) error {
+	if err := c.doneErr(); err != nil {
+		return err
+	}
+	if err := c.manager.SetAuthCallback(adaptUserTokenFetcher(fetcher)); err != nil {
+		return err
+	}
+	if flush {
+		return c.flush(ctx)
+	}
+	return nil
+}
+
 func (c *WebSocketClient) setAuth(ctx context.Context, token string, flush bool) error {
 	if err := c.doneErr(); err != nil {
 		return err

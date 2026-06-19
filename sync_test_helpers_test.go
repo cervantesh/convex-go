@@ -151,6 +151,13 @@ func (c *fakeSyncConn) Close(error) error {
 	return nil
 }
 
+func (c *fakeSyncConn) closeWithError(err error) {
+	select {
+	case c.closed <- err:
+	default:
+	}
+}
+
 func (c *fakeSyncConn) waitSent(t *testing.T) []byte {
 	t.Helper()
 	select {

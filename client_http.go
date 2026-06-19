@@ -151,13 +151,7 @@ func (c *HTTPClient) FunctionValue(ctx context.Context, path string, args any, c
 
 // GetTimestamp returns a timestamp token for consistent reads.
 func (c *HTTPClient) GetTimestamp(ctx context.Context) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.address+"/api/query_ts", nil)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Convex-Client", c.clientID)
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequestWithAuthRetry(ctx, http.MethodPost, c.address+"/api/query_ts", nil)
 	if err != nil {
 		return "", err
 	}
@@ -249,15 +243,7 @@ func (c *HTTPClient) callAnyFunction(ctx context.Context, path string, args any,
 }
 
 func (c *HTTPClient) doFunctionRequest(ctx context.Context, kind FunctionKind, path string, endpoint string, body []byte) (Value, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(body))
-	if err != nil {
-		return Value{}, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Convex-Client", c.clientID)
-	c.setAuthHeader(req)
-
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doRequestWithAuthRetry(ctx, http.MethodPost, endpoint, body)
 	if err != nil {
 		return Value{}, err
 	}
@@ -306,16 +292,75 @@ func (c *HTTPClient) doFunctionRequest(ctx context.Context, kind FunctionKind, p
 	}
 }
 
-func (c *HTTPClient) setAuthHeader(req *http.Request) {
+func (c *HTTPClient) setAuthCallback(fetcher UserTokenFetcher) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.authCallback = fetcher
+	c.auth = ""
+	c.adminAuth = ""
+}
+
+func (c *HTTPClient) doRequestWithAuthRetry(ctx context.Context, method string, endpoint string, body []byte) (*http.Response, error) {
+	resp, usedCallback, err := c.doAuthenticatedRequest(ctx, method, endpoint, body, false)
+	if err != nil {
+		return nil, err
+	}
+	if !usedCallback || (resp.StatusCode != http.StatusUnauthorized && resp.StatusCode != http.StatusForbidden) {
+		return resp, nil
+	}
+	_ = resp.Body.Close()
+	resp, _, err = c.doAuthenticatedRequest(ctx, method, endpoint, body, true)
+	return resp, err
+}
+
+func (c *HTTPClient) doAuthenticatedRequest(ctx context.Context, method string, endpoint string, body []byte, forceRefresh bool) (*http.Response, bool, error) {
+	var reader io.Reader
+	if body != nil {
+		reader = bytes.NewReader(body)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, endpoint, reader)
+	if err != nil {
+		return nil, false, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Convex-Client", c.clientID)
+	authHeader, usedCallback, err := c.authHeaderValue(forceRefresh)
+	if err != nil {
+		return nil, usedCallback, err
+	}
+	if authHeader != "" {
+		req.Header.Set("Authorization", authHeader)
+	}
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, usedCallback, err
+	}
+	return resp, usedCallback, nil
+}
+
+func (c *HTTPClient) authHeaderValue(forceRefresh bool) (string, bool, error) {
 	c.mu.RLock()
-	defer c.mu.RUnlock()
-	if c.adminAuth != "" {
-		req.Header.Set("Authorization", "Convex "+c.adminAuth)
-		return
+	adminAuth := c.adminAuth
+	auth := c.auth
+	authCallback := c.authCallback
+	c.mu.RUnlock()
+	if authCallback != nil {
+		token, err := authCallback(forceRefresh)
+		if err != nil {
+			return "", true, err
+		}
+		if token == "" {
+			return "", true, nil
+		}
+		return "Bearer " + token, true, nil
 	}
-	if c.auth != "" {
-		req.Header.Set("Authorization", "Bearer "+c.auth)
+	if adminAuth != "" {
+		return "Convex " + adminAuth, false, nil
 	}
+	if auth != "" {
+		return "Bearer " + auth, false, nil
+	}
+	return "", false, nil
 }
 
 func decodeInto(result any, out any) error {

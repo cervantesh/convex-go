@@ -20,6 +20,11 @@
 // Realtime APIs:
 //   - Client.Subscribe starts normal application query subscriptions.
 //   - WebSocketClient.Subscribe starts query subscriptions.
+//   - Client.SetAuthCallback and WebSocketClient.SetAuthCallback install
+//     refreshable user JWT callbacks.
+//   - Client.ConnectionState and WebSocketClient.ConnectionState expose a
+//     stable connection snapshot, and SubscribeToConnectionState lets callers
+//     observe changes.
 //   - WebSocketClient.WatchAll is an advanced helper for coalesced snapshots of
 //     active query results.
 //
