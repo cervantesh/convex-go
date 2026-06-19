@@ -349,8 +349,9 @@ fmt.Printf("function=%#v\n", result)
 ## Realtime-Only Client With Optimistic Update
 
 Use `NewWebSocketClient` directly when your process is primarily sync and wants
-optimistic local updates. Start or reuse the active query before applying the
-optimistic update so the local store has a visible result to patch.
+optimistic local updates. Pair the mutation with `WithOptimisticUpdate`. Start
+or reuse the active query before applying the optimistic update so the local
+store has a visible result to patch.
 
 ```go
 client, err := convex.NewWebSocketClient(ctx, os.Getenv("CONVEX_URL"))
