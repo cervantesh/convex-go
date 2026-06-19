@@ -43,6 +43,25 @@ Record the RED and GREEN commands in the issue or PR body.
 - If a realtime auth update can block on transport flush, prefer the
   context-aware auth methods so callers can bound that wait explicitly.
 
+## Public API Freeze Workflow
+
+The frozen root path stays centered on `NewClient`, `Query`, `Mutation`,
+`Action`, `Subscribe`, and `Close`. `NewHTTPClient` and
+`NewWebSocketClient` stay public as explicit clients, while `baseclient`
+remains the advanced package.
+
+Do not add `Watch` as a new primary realtime verb in the root package.
+`WatchAll` may exist only as an advanced helper.
+
+Before changing exported root or `baseclient` APIs:
+
+1. Start with the failing guard or behavior test.
+2. Update `api_surface_test.go` if the public contract changes.
+3. Update public docs such as `README.md`, `docs/PARITY.md`, and
+   `docs/ARCHITECTURE.md`.
+4. Add migration notes in `CHANGELOG.md` or the PR body for any justified
+   pre-v1 break.
+
 ## Conformance Fixtures
 
 Compatibility claims must be backed by offline fixtures, not memory. A fixture
