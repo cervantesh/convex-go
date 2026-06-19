@@ -29,7 +29,7 @@ func handleListMessages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_ = json.NewEncoder(w).Encode(value.GoValue())
+	_ = json.NewEncoder(w).Encode(value)
 }
 ```
 
@@ -349,7 +349,8 @@ fmt.Printf("function=%#v\n", result)
 ## Realtime-Only Client With Optimistic Update
 
 Use `NewWebSocketClient` directly when your process is primarily sync and wants
-optimistic local updates.
+optimistic local updates. Start or reuse the active query before applying the
+optimistic update so the local store has a visible result to patch.
 
 ```go
 client, err := convex.NewWebSocketClient(ctx, os.Getenv("CONVEX_URL"))
@@ -357,6 +358,12 @@ if err != nil {
 	return err
 }
 defer client.Close()
+
+subscription, err := client.Subscribe(ctx, "messages:list", nil)
+if err != nil {
+	return err
+}
+defer subscription.Close()
 
 err = client.Mutation(ctx, "messages:send", map[string]any{"body": "hello"},
 	convex.WithOptimisticUpdate(func(store *convex.OptimisticLocalStore) error {
