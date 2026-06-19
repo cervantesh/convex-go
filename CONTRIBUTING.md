@@ -43,6 +43,7 @@ Keep changes scoped to the issue being addressed. For protocol work, prefer fixt
 Compatibility claims must cite an upstream source and be backed by an offline fixture; see [docs/CONFORMANCE.md](docs/CONFORMANCE.md).
 
 See [docs/maintainers/DEVELOPMENT.md](docs/maintainers/DEVELOPMENT.md) for the required spec-driven and TDD workflow.
+See [docs/maintainers/GOVERNANCE.md](docs/maintainers/GOVERNANCE.md) for merge, release, and pre-v1 breaking-change policy.
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before moving exported APIs or changing package boundaries.
 See [docs/maintainers/LIVE_INTEGRATION.md](docs/maintainers/LIVE_INTEGRATION.md) for the manual live deployment workflow.
 Release preparation is tracked in [docs/maintainers/RELEASE.md](docs/maintainers/RELEASE.md).
