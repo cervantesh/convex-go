@@ -21,6 +21,7 @@ Maintainer workflow docs:
 
 - [ROADMAP.md](ROADMAP.md)
 - [maintainers/COMMUNITY.md](maintainers/COMMUNITY.md)
+- [maintainers/GOVERNANCE.md](maintainers/GOVERNANCE.md)
 - [maintainers/DEVELOPMENT.md](maintainers/DEVELOPMENT.md)
 - [maintainers/QUALITY.md](maintainers/QUALITY.md)
 - [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md)
