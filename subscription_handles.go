@@ -5,6 +5,7 @@ import (
 	"sync"
 )
 
+// QuerySubscription streams results for one realtime Convex query.
 type QuerySubscription struct {
 	client *WebSocketClient
 	id     SubscriberID
@@ -18,10 +19,12 @@ type QuerySubscription struct {
 	closeErr          error
 }
 
+// ID returns the opaque subscription identifier assigned by the sync layer.
 func (s *QuerySubscription) ID() SubscriberID {
 	return s.id
 }
 
+// Next waits for the next query result for this subscription.
 func (s *QuerySubscription) Next(ctx context.Context) (FunctionResult, error) {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -49,6 +52,7 @@ func (s *QuerySubscription) Next(ctx context.Context) (FunctionResult, error) {
 	}
 }
 
+// Unsubscribe removes the underlying realtime subscription.
 func (s *QuerySubscription) Unsubscribe(ctx context.Context) error {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -81,10 +85,12 @@ func (s *QuerySubscription) Unsubscribe(ctx context.Context) error {
 	return nil
 }
 
+// Close unsubscribes with a background context.
 func (s *QuerySubscription) Close() error {
 	return s.Unsubscribe(context.Background())
 }
 
+// QuerySetSubscription streams coalesced snapshots of all active realtime queries.
 type QuerySetSubscription struct {
 	client *WebSocketClient
 
@@ -95,6 +101,7 @@ type QuerySetSubscription struct {
 	closeErr  error
 }
 
+// Next waits for the next coalesced query-set snapshot.
 func (s *QuerySetSubscription) Next(ctx context.Context) (QueryResults, error) {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -122,6 +129,7 @@ func (s *QuerySetSubscription) Next(ctx context.Context) (QueryResults, error) {
 	}
 }
 
+// Close stops the coalesced snapshot stream.
 func (s *QuerySetSubscription) Close() error {
 	s.closeOnce.Do(func() {
 		s.closeErr = s.client.unwatch(s)

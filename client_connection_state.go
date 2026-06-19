@@ -1,5 +1,7 @@
 package convex
 
+// ConnectionState reports the current realtime state for the client's lazy
+// WebSocket component. If realtime has not started yet, it returns Disconnected.
 func (c *Client) ConnectionState() ConnectionState {
 	c.mu.Lock()
 	realtime := c.webSocketClient
@@ -10,6 +12,9 @@ func (c *Client) ConnectionState() ConnectionState {
 	return realtime.ConnectionState()
 }
 
+// SubscribeToConnectionState invokes cb immediately with the current snapshot
+// and again when the realtime state changes. It returns an unsubscribe
+// function that is safe to call more than once.
 func (c *Client) SubscribeToConnectionState(cb func(ConnectionState)) func() {
 	if cb == nil {
 		return func() {}
