@@ -48,6 +48,14 @@ jobs:
       - name: Test
         run: go test ./... -count=1
 
+      - name: Demo module tidy
+        working-directory: examples/realtime_chat
+        run: go mod tidy -diff
+
+      - name: Demo smoke
+        working-directory: examples/realtime_chat
+        run: go test ./... -count=1
+
   quality:
     name: Go ${{ matrix.go-version }}
     runs-on: ubuntu-latest
