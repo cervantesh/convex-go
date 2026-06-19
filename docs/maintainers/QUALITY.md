@@ -74,6 +74,21 @@ Do not configure Golint, GoMetaLinter, or go vet report paths unless this repo
 actually generates those files. Nonexistent report paths create false Sonar
 warnings and hide real signal.
 
+## Runtime Leak And Retention Budgets
+
+These tests cover goroutine lifecycle, watcher cleanup, and result history
+retention budgets without depending on workstation-only profiling.
+
+- `baseclient/retention_test.go` bounds completed mutation and action result
+  history.
+- `subscription_close_cleanup_test.go` and
+  `subscription_query_cleanup_test.go` verify watcher cleanup and bounded query
+  cleanup when unsubscribe flushing blocks.
+- `subscription_leak_budget_test.go` and
+  `internal/syncclient/websocket_manager_leak_budget_test.go` verify repeated
+  client and manager shutdown with active subscriptions completes within the
+  test budget.
+
 ## Optional Local Debugging
 
 Local commands are for fast feedback only. They are not the release contract.
