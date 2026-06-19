@@ -262,7 +262,7 @@ func assertPathExists(t *testing.T, path string) {
 }
 
 func assertPathMissing(t *testing.T, path string) {
-		t.Helper()
+	t.Helper()
 	if _, err := os.Stat(path); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("expected %s to be missing, got %v", path, err)
 	}
