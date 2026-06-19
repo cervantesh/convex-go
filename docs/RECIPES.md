@@ -138,7 +138,8 @@ if err != nil {
 ## Connection State Monitoring
 
 Use connection-state callbacks when a long-lived process needs a coarse health
-signal without leaking raw transport internals.
+signal without leaking raw transport internals. The callback receives the
+public `ConnectionState` snapshot.
 
 ```go
 client, err := convex.NewClient(os.Getenv("CONVEX_URL"))
