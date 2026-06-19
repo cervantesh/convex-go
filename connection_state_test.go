@@ -29,6 +29,27 @@ func TestClientConnectionStateStartsDisconnectedBeforeRealtimeInit(t *testing.T)
 	})
 }
 
+func TestConnectionStateSubscriptionsAllowNilCallbacks(t *testing.T) {
+	client, err := NewClient("https://happy-animal-123.convex.cloud", WithSkipDeploymentURLCheck())
+	if err != nil {
+		t.Fatal(err)
+	}
+	client.SubscribeToConnectionState(nil)()
+
+	dialer := newFakeSyncDialer()
+	ws, err := NewWebSocketClient(context.Background(), "https://happy-animal-123.convex.cloud",
+		withWebSocketDialer(dialer),
+		WithWebSocketReconnectBackoff(0),
+		WithWebSocketInactivityTimeout(time.Hour),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeTestWebSocketClient(t, ws)
+
+	ws.SubscribeToConnectionState(nil)()
+}
+
 func TestClientConnectionStateSubscriberTracksLazyRealtimeLifecycle(t *testing.T) {
 	dialer := newFakeSyncDialer()
 	var blocked <-chan struct{}
