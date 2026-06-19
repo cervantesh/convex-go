@@ -25,6 +25,8 @@
 //   - Client.ConnectionState and WebSocketClient.ConnectionState expose a
 //     stable connection snapshot, and SubscribeToConnectionState lets callers
 //     observe changes.
+//   - The root package does not expose a public logging API yet; connection
+//     state callbacks are the supported observability path today.
 //   - WebSocketClient.WatchAll is an advanced helper for coalesced snapshots of
 //     active query results.
 //

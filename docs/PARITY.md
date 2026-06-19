@@ -20,6 +20,7 @@ main path for normal applications.
 | Realtime subscriptions and sync-backed mutations | Supported | `Client.Subscribe` is the main path; `NewWebSocketClient` is the explicit realtime client. |
 | User auth callback refresh | Supported | Root `SetAuthCallback` mirrors the refreshable user-token flow exposed by the official JS and Rust clients, while keeping admin auth explicit. |
 | Public realtime connection state | Supported | `ConnectionState` and `SubscribeToConnectionState` expose stable connection snapshots without leaking raw protocol transport types. |
+| Public SDK logging hooks | Not supported | The root package intentionally does not export logger hooks or log levels yet; use connection-state callbacks and external transport instrumentation instead. |
 | Optimistic local query updates | Supported | Scoped to active realtime queries through `WithOptimisticUpdate`. |
 | Advanced sync state machine | Advanced | `baseclient` is public for integrators, bindings, and alternate transports. |
 | Typed references and offline codegen | Partial | Typed refs are stable, but generated argument and result types still default to generic Go shapes. |
@@ -56,6 +57,9 @@ rules for adding or changing compatibility claims.
   CI.
 - `cmd/convex-go-codegen` does not infer arbitrary TypeScript validator types
   yet; generated refs default to generic Go argument and result types.
+- There is no public root-package logging API yet. Realtime observability is
+  available through `ConnectionState`, but protocol/event logging remains an
+  intentional non-goal until a smaller stable design is justified.
 - `WatchAll` exists as a Go-specific advanced helper. `Subscribe` remains the
   canonical Convex verb in the main API.
 - Advanced sync auth token modeling and raw protocol types belong in
