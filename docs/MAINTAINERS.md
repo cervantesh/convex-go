@@ -25,6 +25,7 @@ Maintainer workflow docs:
 - [maintainers/COMMUNITY.md](maintainers/COMMUNITY.md)
 - [maintainers/GOVERNANCE.md](maintainers/GOVERNANCE.md)
 - [maintainers/DEVELOPMENT.md](maintainers/DEVELOPMENT.md)
+- [maintainers/HANDOFF_GATE.md](maintainers/HANDOFF_GATE.md)
 - [maintainers/OFFICIAL_LINKING_REQUEST.md](maintainers/OFFICIAL_LINKING_REQUEST.md)
 - [maintainers/QUALITY.md](maintainers/QUALITY.md)
 - [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md)
