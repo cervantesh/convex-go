@@ -14,7 +14,7 @@ memory or by ad hoc workstation runs.
 | --- | --- | --- | --- |
 | Minimum supported toolchain | Go 1.25 | `go.mod`, [README.md](../README.md), `.github/workflows/ci.yml` | Go versions older than 1.25 are outside the support policy. |
 | Release-quality validation | Go 1.25 and `stable` on `ubuntu-latest` | `.github/workflows/ci.yml`, [maintainers/QUALITY.md](maintainers/QUALITY.md) | This job runs race, shuffle, vet, vulncheck, lint, coverage, and Sonar report generation. |
-| Cross-platform smoke validation | `stable` on `ubuntu-latest`, `windows-latest`, and `macos-latest` | `.github/workflows/ci.yml` | This proves the default module path, format checks, module verification, and `go test ./...` across the supported operating systems. |
+| Cross-platform smoke validation | `stable` on `ubuntu-latest`, `windows-latest`, and `macos-latest` | `.github/workflows/ci.yml` | This proves the default module path, format checks, module verification, the compiled public examples in the root module, and the `examples/realtime_chat` demo module across the supported operating systems. |
 | Live integration runner | `stable` on `ubuntu-latest` | `.github/workflows/live-integration.yml`, [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md) | This workflow is opt-in and manual. It is extra release evidence, not the default merge gate. |
 
 ## Backend Evidence Matrix
