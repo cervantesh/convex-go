@@ -109,3 +109,67 @@ func TestWebSocketClientSetAdminAuthContextUsesUserIdentityAttributes(t *testing
 		t.Fatalf("unexpected acting-as identity: %#v", auth.ActingAs)
 	}
 }
+
+func TestWebSocketClientSetAuthUsesBoundedContext(t *testing.T) {
+	dialer := newFakeSyncDialer()
+	client, attempt := newStartedTestWebSocketClient(t, dialer)
+	defer closeTestWebSocketClient(t, client)
+
+	if err := client.SetAuth("user-token"); err != nil {
+		t.Fatal(err)
+	}
+
+	auth := decodeSentClientMessage[AuthenticateMessage](t, attempt.conn.waitSent(t))
+	if auth.TokenType != "User" || auth.Value != "user-token" {
+		t.Fatalf("unexpected user auth message: %#v", auth)
+	}
+}
+
+func TestWebSocketClientSetAdminAuthUsesBoundedContext(t *testing.T) {
+	dialer := newFakeSyncDialer()
+	client, attempt := newStartedTestWebSocketClient(t, dialer)
+	defer closeTestWebSocketClient(t, client)
+
+	err := client.SetAdminAuth("admin-token", UserIdentityAttributes{
+		"issuer":  "issuer",
+		"subject": "subject",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth := decodeSentClientMessage[AuthenticateMessage](t, attempt.conn.waitSent(t))
+	if auth.TokenType != "Admin" || auth.Value != "admin-token" {
+		t.Fatalf("unexpected admin auth message: %#v", auth)
+	}
+	if auth.ActingAs == nil || auth.ActingAs.TokenIdentifier != "issuer|subject" {
+		t.Fatalf("unexpected acting-as identity: %#v", auth.ActingAs)
+	}
+}
+
+func TestWebSocketClientClearAuthUsesBoundedContext(t *testing.T) {
+	dialer := newFakeSyncDialer()
+	client, attempt := newStartedTestWebSocketClient(t, dialer)
+	defer closeTestWebSocketClient(t, client)
+
+	if err := client.ClearAuth(); err != nil {
+		t.Fatal(err)
+	}
+
+	auth := decodeSentClientMessage[AuthenticateMessage](t, attempt.conn.waitSent(t))
+	if auth.TokenType != "None" || auth.Value != "" {
+		t.Fatalf("unexpected clear auth message: %#v", auth)
+	}
+}
+
+func TestBoundedTimeoutUsesMinimumForNonPositiveDurations(t *testing.T) {
+	if got := boundedTimeout(0); got != time.Millisecond {
+		t.Fatalf("boundedTimeout(0) = %s, want %s", got, time.Millisecond)
+	}
+	if got := boundedTimeout(-time.Second); got != time.Millisecond {
+		t.Fatalf("boundedTimeout(-1s) = %s, want %s", got, time.Millisecond)
+	}
+	if got := boundedTimeout(2 * time.Second); got != 2*time.Second {
+		t.Fatalf("boundedTimeout(2s) = %s, want %s", got, 2*time.Second)
+	}
+}
