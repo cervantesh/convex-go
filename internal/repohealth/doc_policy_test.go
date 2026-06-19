@@ -30,25 +30,35 @@ func TestPackageDocumentationDeclaresAPITiers(t *testing.T) {
 func TestReadmeIntroducesBaseClientAfterMainClientPath(t *testing.T) {
 	body := readTextFile(t, "README.md")
 	assertTextOrder(t, body, "README.md", []string{
-		"## Install",
-		"## NewClient",
+		"## Installation",
+		"## Example",
+		"## Documentation",
+		"## Supported Go Version",
+		"## Community / Support",
+	})
+	for _, want := range []string{
+		"convex.NewClient",
+		"docs/USAGE.md",
+		"docs/PARITY.md",
+		"docs/CONFORMANCE.md",
+		"docs/ARCHITECTURE.md",
+		"docs/MAINTAINERS.md",
+		"baseclient",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("README.md must document %q", want)
+		}
+	}
+	for _, blocked := range []string{
+		"## API Map",
 		"## Explicit HTTP Client",
-		"## Realtime Subscriptions",
-		"## Auth",
 		"## Application Errors",
 		"## Value Mapping",
 		"## Pagination",
 		"## Advanced Base Client",
-	})
-	for _, want := range []string{
-		"convex.NewClient",
-		"convex.NewHTTPClient",
-		"Client.Subscribe",
-		"`WatchAll` is an advanced Go helper",
-		"github.com/cervantesh/convex-go/baseclient",
 	} {
-		if !strings.Contains(body, want) {
-			t.Fatalf("README.md must document %q", want)
+		if strings.Contains(body, blocked) {
+			t.Fatalf("README.md must stay concise and must not keep legacy section %q", blocked)
 		}
 	}
 }
@@ -56,7 +66,7 @@ func TestReadmeIntroducesBaseClientAfterMainClientPath(t *testing.T) {
 func TestReadmeSeparatesPublicAndMaintainerDocs(t *testing.T) {
 	body := readTextFile(t, "README.md")
 	for _, want := range []string{
-		"docs/RECIPES.md",
+		"docs/USAGE.md",
 		"docs/PARITY.md",
 		"docs/CONFORMANCE.md",
 		"docs/ARCHITECTURE.md",
@@ -73,6 +83,47 @@ func TestReadmeSeparatesPublicAndMaintainerDocs(t *testing.T) {
 	} {
 		if strings.Contains(body, blocked) {
 			t.Fatalf("README.md must not document %q", blocked)
+		}
+	}
+}
+
+func TestUsageDocsCoverPublicHowTo(t *testing.T) {
+	body := readTextFile(t, "docs/USAGE.md")
+	for _, want := range []string{
+		"convex.NewClient",
+		"SetAuth",
+		"SetAuthCallback",
+		"HTTPError",
+		"ConvexError",
+		"Number",
+		"QueryInto",
+		"NewQueryReference",
+		"cmd/convex-go-codegen",
+		"NewHTTPClient",
+		"NewWebSocketClient",
+		"WithOptimisticUpdate",
+		"baseclient",
+		"RECIPES.md",
+		"examples_test.go",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("docs/USAGE.md must document %q", want)
+		}
+	}
+}
+
+func TestReadmeExampleHasCompiledMirror(t *testing.T) {
+	body := readTextFile(t, "examples_test.go")
+	for _, want := range []string{
+		"func ExampleClient_overview()",
+		"convex.NewClient",
+		`client.Query(ctx, "messages:list"`,
+		`client.Mutation(ctx, "messages:send"`,
+		`client.Subscribe(ctx, "messages:list", nil)`,
+		"client.Close()",
+	} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("examples_test.go must keep README example mirror for %q", want)
 		}
 	}
 }
