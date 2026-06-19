@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"os/exec"
 	"strconv"
@@ -90,10 +91,12 @@ func runCoverageCheck(args []string, stdout, stderr io.Writer) error {
 	if err != nil {
 		return err
 	}
-	if total < *minimum {
-		return fmt.Errorf("coverage %.1f%% is below %.1f%%", total, *minimum)
+	displayTotal := roundCoveragePercent(total)
+	displayMinimum := roundCoveragePercent(*minimum)
+	if displayTotal < displayMinimum {
+		return fmt.Errorf("coverage %.1f%% is below %.1f%%", displayTotal, displayMinimum)
 	}
-	_, err = fmt.Fprintf(stdout, "coverage %.1f%% meets minimum %.1f%%\n", total, *minimum)
+	_, err = fmt.Fprintf(stdout, "coverage %.1f%% meets minimum %.1f%%\n", displayTotal, displayMinimum)
 	return err
 }
 
@@ -166,6 +169,10 @@ func parseCoverageProfile(body string) (float64, error) {
 		return 0, errors.New("invalid coverage profile: no statements")
 	}
 	return covered * 100 / total, nil
+}
+
+func roundCoveragePercent(value float64) float64 {
+	return math.Round(value*10) / 10
 }
 
 func writeUsage(w io.Writer) {
