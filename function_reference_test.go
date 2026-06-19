@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -152,5 +153,29 @@ func TestTypedFunctionReferenceDecodeErrorsAreReturned(t *testing.T) {
 	messagesGet := NewQueryReference[struct{}, typedMessage]("messages:get")
 	if _, err := messagesGet.Query(context.Background(), client, struct{}{}); err == nil {
 		t.Fatal("expected decode error for mismatched typed result")
+	}
+}
+
+func TestDecodeTypedValueSupportsValueAndAnyTargets(t *testing.T) {
+	raw := MustObjectValue(map[string]Value{
+		"author": StringValue("Ada"),
+		"count":  Int64Value(2),
+	})
+
+	gotValue, err := decodeTypedValue[Value](raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(gotValue, raw) {
+		t.Fatalf("typed Value decode = %#v, want %#v", gotValue, raw)
+	}
+
+	gotAny, err := decodeTypedValue[any](raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantAny := raw.GoValue()
+	if !reflect.DeepEqual(gotAny, wantAny) {
+		t.Fatalf("typed any decode = %#v, want %#v", gotAny, wantAny)
 	}
 }
