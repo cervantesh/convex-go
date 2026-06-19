@@ -13,7 +13,7 @@ func FuzzParseFunctionPath(f *testing.F) {
 		"dir/messages.ts:list",
 		"components/search:run",
 		"",
-		":" ,
+		":",
 	} {
 		f.Add(seed)
 	}
