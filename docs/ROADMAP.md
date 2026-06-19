@@ -121,11 +121,12 @@ Completed in this repository:
   `github.com/get-convex/convex-go`
 - #46 Request official linking as the recommended community Go client
 - #47 Draft the official adoption proposal and ownership options for Convex
+- #48 Define the handoff gate that must be met before official adoption work
+  begins
 
 Remaining:
 
-- #48 Define the handoff gate that must be met before official adoption work
-  begins
+- None. Milestone 4 is complete.
 
 ## Milestone 5 - Official Handoff
 
