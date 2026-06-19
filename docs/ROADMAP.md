@@ -97,13 +97,13 @@ Goal: reduce friction for new Go adopters and gather external proof.
 
 Completed in this repository:
 
+- #38 Publish migration guides from convex-js, convex-rs, and convex-py
 - #41 Define community operations, templates, and triage cadence for pre-v1
   support
 
 Remaining:
 
 - #37 Expand public recipes into a complete Go cookbook
-- #38 Publish migration guides from convex-js, convex-rs, and convex-py
 - #39 Publish a public demo app that uses the SDK as an application dependency
 - #40 Add CI smoke coverage for demos and public examples
 - #42 Run an external adopter validation program for the Go client

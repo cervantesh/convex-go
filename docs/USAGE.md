@@ -4,8 +4,9 @@ Use `convex.NewClient` as the main entry point for most applications. It
 combines HTTP calls for point-in-time operations with lazy realtime startup for
 subscriptions.
 
-For longer operational patterns, see [RECIPES.md](RECIPES.md). Compilable API
-examples live in [examples_test.go](../examples_test.go).
+For longer operational patterns, see [RECIPES.md](RECIPES.md). If you are
+porting from another official client, start with [MIGRATION.md](MIGRATION.md).
+Compilable API examples live in [examples_test.go](../examples_test.go).
 
 ## Root client
 
