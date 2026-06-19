@@ -48,6 +48,24 @@ If you want connection observability, use
 `WatchAll` exists as an advanced helper for coalesced query snapshots. It is
 not the primary realtime verb.
 
+## Observability and logging
+
+The public observability story is intentionally small:
+
+- `ConnectionState`
+- `Client.ConnectionState`
+- `WebSocketClient.ConnectionState`
+- `Client.SubscribeToConnectionState`
+- `WebSocketClient.SubscribeToConnectionState`
+
+These APIs expose stable connection snapshots without leaking raw sync
+transport types into normal application code.
+
+There is no public SDK logging API yet. The client does not currently expose
+`WithLogger`, log levels, or protocol event hooks in the root package. If you
+need extra visibility today, use connection-state callbacks for realtime health
+and wrap your own `http.Client` or transport boundary outside the SDK.
+
 ## Errors
 
 For transport and function boundaries, the public error surface is
