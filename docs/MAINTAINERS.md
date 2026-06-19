@@ -27,6 +27,7 @@ Maintainer workflow docs:
 - [maintainers/QUALITY.md](maintainers/QUALITY.md)
 - [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md)
 - [maintainers/MUTATION_TESTING.md](maintainers/MUTATION_TESTING.md)
+- [maintainers/NAMESPACE_TRANSITION.md](maintainers/NAMESPACE_TRANSITION.md)
 - [maintainers/PUBLICATION.md](maintainers/PUBLICATION.md)
 - [maintainers/RELEASE.md](maintainers/RELEASE.md)
 
