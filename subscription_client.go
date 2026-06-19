@@ -9,6 +9,7 @@ import (
 	"github.com/cervantesh/convex-go/internal/syncclient"
 )
 
+// WebSocketClient is the explicit realtime client backed by Convex sync.
 type WebSocketClient struct {
 	manager *syncclient.Manager
 	ctx     context.Context
@@ -27,6 +28,8 @@ type WebSocketClient struct {
 	hasLatest     bool
 }
 
+// NewWebSocketClient creates an explicit realtime client for subscriptions,
+// one-shot realtime queries, and sync-backed mutations.
 func NewWebSocketClient(ctx context.Context, deploymentURL string, opts ...WebSocketOption) (*WebSocketClient, error) {
 	if ctx == nil {
 		ctx = context.Background()
@@ -62,6 +65,7 @@ func NewWebSocketClient(ctx context.Context, deploymentURL string, opts ...WebSo
 	return client, nil
 }
 
+// Subscribe starts a realtime query subscription.
 func (c *WebSocketClient) Subscribe(ctx context.Context, path string, args any) (*QuerySubscription, error) {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -100,6 +104,7 @@ func (c *WebSocketClient) Subscribe(ctx context.Context, path string, args any) 
 	return subscription, nil
 }
 
+// QueryValue performs a one-shot realtime query and returns the raw Convex value.
 func (c *WebSocketClient) QueryValue(ctx context.Context, path string, args any) (Value, error) {
 	ctx = nonNilContext(ctx)
 	subscription, err := c.Subscribe(ctx, path, args)
@@ -122,6 +127,7 @@ func (c *WebSocketClient) QueryValue(ctx context.Context, path string, args any)
 	return value, nil
 }
 
+// Query performs a one-shot realtime query and returns a Go value.
 func (c *WebSocketClient) Query(ctx context.Context, path string, args any) (any, error) {
 	ctx = nonNilContext(ctx)
 	value, err := c.QueryValue(ctx, path, args)
@@ -131,6 +137,7 @@ func (c *WebSocketClient) Query(ctx context.Context, path string, args any) (any
 	return value.GoValue(), nil
 }
 
+// Mutation sends a sync-backed mutation through the realtime transport.
 func (c *WebSocketClient) Mutation(ctx context.Context, path string, args any, opts ...SyncMutationOption) error {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -150,6 +157,7 @@ func (c *WebSocketClient) Mutation(ctx context.Context, path string, args any, o
 	return nil
 }
 
+// WatchAll streams coalesced snapshots of all active realtime queries.
 func (c *WebSocketClient) WatchAll(ctx context.Context) (*QuerySetSubscription, error) {
 	ctx = nonNilContext(ctx)
 	if err := ctxErr(ctx); err != nil {
@@ -172,6 +180,7 @@ func (c *WebSocketClient) WatchAll(ctx context.Context) (*QuerySetSubscription, 
 	return watcher, nil
 }
 
+// Close stops the realtime client and waits for its background work to exit.
 func (c *WebSocketClient) Close() error {
 	c.closeOnce.Do(c.cancel)
 	<-c.done
@@ -182,12 +191,14 @@ func (c *WebSocketClient) Close() error {
 	return err
 }
 
+// SetAuth installs a user JWT for the realtime transport.
 func (c *WebSocketClient) SetAuth(token string) error {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
 	return c.SetAuthContext(ctx, token)
 }
 
+// SetAuthContext installs a user JWT and uses ctx to bound the flush.
 func (c *WebSocketClient) SetAuthContext(ctx context.Context, token string) error {
 	return c.setAuth(ctx, token, true)
 }
@@ -232,12 +243,15 @@ func (c *WebSocketClient) setAuth(ctx context.Context, token string, flush bool)
 	return nil
 }
 
+// SetAdminAuth installs an admin or deploy token for the realtime transport.
 func (c *WebSocketClient) SetAdminAuth(token string, actingAs ...UserIdentityAttributes) error {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
 	return c.SetAdminAuthContext(ctx, token, actingAs...)
 }
 
+// SetAdminAuthContext installs an admin or deploy token and uses ctx to bound
+// the flush.
 func (c *WebSocketClient) SetAdminAuthContext(ctx context.Context, token string, actingAs ...UserIdentityAttributes) error {
 	return c.setAdminAuth(ctx, token, true, actingAs...)
 }
@@ -255,12 +269,14 @@ func (c *WebSocketClient) setAdminAuth(ctx context.Context, token string, flush 
 	return nil
 }
 
+// ClearAuth removes any current realtime auth.
 func (c *WebSocketClient) ClearAuth() error {
 	ctx, cancel := boundedRealtimeControlContext()
 	defer cancel()
 	return c.ClearAuthContext(ctx)
 }
 
+// ClearAuthContext removes any current realtime auth and uses ctx to bound the flush.
 func (c *WebSocketClient) ClearAuthContext(ctx context.Context) error {
 	return c.clearAuth(ctx, true)
 }
