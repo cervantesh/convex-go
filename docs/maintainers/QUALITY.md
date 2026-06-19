@@ -16,6 +16,13 @@ The smoke matrix must prove that these gates work on Linux, macOS, and Windows:
 - `go mod verify`
 - `git diff --check`
 - `go test ./... -count=1`
+- `go mod tidy -diff` in `examples/realtime_chat`
+- `go test ./... -count=1` in `examples/realtime_chat`
+
+The root smoke path compiles the public examples in `examples_test.go` and
+`auth_examples_test.go`. The separate demo smoke path compiles the nested
+`examples/realtime_chat` module so public application-facing examples stay in
+the default CI contract.
 
 The Ubuntu quality job must enforce the heavier gates on Go 1.25 and one
 current stable Go version:
