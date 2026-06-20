@@ -93,13 +93,53 @@ func TestRunWithIOIntegrationEnvCheckCustomAuthEnvIsReportedWhenPresent(t *testi
 	}
 }
 
+func TestRunWithIOIntegrationEnvCheckRejectsRefreshTokenWithoutPrimaryAuth(t *testing.T) {
+	t.Setenv("CONVEX_URL", "https://happy-animal-123.convex.cloud")
+	t.Setenv("CONVEX_AUTH_TOKEN", "")
+	t.Setenv("CONVEX_AUTH_REFRESH_TOKEN", "refresh-token")
+
+	err := runWithIO([]string{"integration-env-check"}, &bytes.Buffer{}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "CONVEX_AUTH_REFRESH_TOKEN requires CONVEX_AUTH_TOKEN") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestRunWithIOIntegrationEnvCheckRejectsIdentityExpectationsWithoutPrimaryAuth(t *testing.T) {
+	t.Setenv("CONVEX_URL", "https://happy-animal-123.convex.cloud")
+	t.Setenv("CONVEX_AUTH_TOKEN", "")
+	t.Setenv("CONVEX_AUTH_EXPECTED_SUBJECT", "subject-123")
+
+	err := runWithIO([]string{"integration-env-check"}, &bytes.Buffer{}, &bytes.Buffer{})
+	if err == nil || !strings.Contains(err.Error(), "auth identity expectations require CONVEX_AUTH_TOKEN") {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestRunWithIOIntegrationEnvCheckReportsRefreshTokenAndIdentityExpectations(t *testing.T) {
+	t.Setenv("CONVEX_URL", "https://happy-animal-123.convex.cloud")
+	t.Setenv("CONVEX_AUTH_TOKEN", "token")
+	t.Setenv("CONVEX_AUTH_REFRESH_TOKEN", "refresh-token")
+	t.Setenv("CONVEX_AUTH_EXPECTED_TOKEN_IDENTIFIER", "issuer|subject")
+
+	var stdout bytes.Buffer
+	if err := runWithIO([]string{"integration-env-check"}, &stdout, &bytes.Buffer{}); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(stdout.String(), "CONVEX_AUTH_REFRESH_TOKEN") {
+		t.Fatalf("expected refresh auth env in stdout: %q", stdout.String())
+	}
+	if !strings.Contains(stdout.String(), "auth identity expectations") {
+		t.Fatalf("expected auth identity expectations in stdout: %q", stdout.String())
+	}
+}
+
 func TestRunWithIOIntegrationEnvCheckHelp(t *testing.T) {
 	var stderr bytes.Buffer
 	err := runWithIO([]string{"integration-env-check", "-h"}, &bytes.Buffer{}, &stderr)
 	if !errors.Is(err, flag.ErrHelp) {
 		t.Fatalf("expected flag.ErrHelp, got %v", err)
 	}
-	if !strings.Contains(stderr.String(), "url-env") {
+	if !strings.Contains(stderr.String(), "url-env") || !strings.Contains(stderr.String(), "refresh-auth-env") {
 		t.Fatalf("unexpected help output: %q", stderr.String())
 	}
 }
