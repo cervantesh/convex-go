@@ -21,9 +21,18 @@ Optional secret:
 
 - `CONVEX_LIVE_AUTH_TOKEN`: bearer token if your test deployment protects the
   sample functions
+- `CONVEX_LIVE_AUTH_REFRESH_TOKEN`: bearer token returned by the reconnect
+  auth callback; if omitted, the workflow reuses `CONVEX_LIVE_AUTH_TOKEN`
+- `CONVEX_LIVE_AUTH_EXPECTED_SUBJECT`: expected authenticated subject for
+  `live:viewer`
+- `CONVEX_LIVE_AUTH_EXPECTED_ISSUER`: expected authenticated issuer for
+  `live:viewer`
+- `CONVEX_LIVE_AUTH_EXPECTED_TOKEN_IDENTIFIER`: expected authenticated token
+  identifier for `live:viewer`
 
 The workflow maps those secrets to the test environment as `CONVEX_URL` and
-`CONVEX_AUTH_TOKEN`.
+`CONVEX_AUTH_TOKEN`, plus the matching reconnect and identity expectation
+variables when they are present.
 
 ## Expected Deployment Contract
 
@@ -32,6 +41,7 @@ The live workflow expects a deployment exposing these public functions:
 - `live:listMessages`
 - `live:sendMessage`
 - `live:ping`
+- `live:viewer`
 
 A minimal sample app lives under `testdata/live-integration/convex/`.
 
@@ -41,6 +51,8 @@ Expected behavior:
 - `live:sendMessage({ room, body, requestId })` inserts one message and returns
   the inserted document
 - `live:ping({ value })` returns `{ ok: true, value }`
+- `live:viewer()` returns the current auth identity summary as
+  `{ authenticated, tokenIdentifier, subject, issuer }`
 
 ## Running The Workflow
 
@@ -55,11 +67,22 @@ The workflow first runs:
 go run ./cmd/convex-go-maint integration-env-check
 ```
 
+That preflight rejects mismatched auth inputs such as a refresh token without a
+primary auth token, and it reports when auth identity expectations are present.
+
 Then it runs the live-tagged test:
 
 ```text
 go test . -tags=integration -run TestLiveIntegration -count=1
 ```
+
+The live suite covers:
+
+- request flow through `live:listMessages`, `live:sendMessage`, and `live:ping`
+- auth identity smoke through `live:viewer`
+- root `SetAuthCallback` against HTTP plus realtime
+- forced websocket reconnect and subscription replay through a wrapped live
+  dialer
 
 Use this workflow as extra release or integration evidence, not as a
 replacement for the normal offline quality gates in [QUALITY.md](QUALITY.md).
