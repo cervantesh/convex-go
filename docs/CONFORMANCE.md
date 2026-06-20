@@ -88,6 +88,27 @@ golangci-lint run --timeout=5m
 | Go API codegen | `internal/codegen/codegen_test.go`, `cmd/convex-go-codegen/main_test.go` | `convex-js/src/cli/codegen_templates/api.ts` | Offline source scan generates deterministic Go refs from Convex query/mutation/action declarations |
 | Optimistic updates | `baseclient/optimistic_updates_test.go`, `subscription_test.go` `TestWebSocketClientMutationWithOptimisticUpdatePublishesToSubscription` | `convex-js/src/browser/sync/optimistic_updates.ts`, `convex-js/src/browser/sync/optimistic_updates_impl.ts` | Active query local store get/all/set, replay over server transitions, rollback on mutation completion/failure |
 
+## Live Harness Feedback Loop
+
+`live_integration_test.go` is not an offline fixture, but it is the versioned
+source of truth for which real-deployment behaviors must be mirrored back into
+default CI coverage.
+
+- `TestLiveIntegrationHTTPAndSync` validates request flow plus authenticated
+  `live:viewer` queries against a real deployment. The same user-visible
+  contracts stay pinned offline in `client_test.go`,
+  `client_auth_callback_test.go`, and
+  `internal/syncprotocol/identity_conformance_test.go`.
+- `TestLiveIntegrationAuthCallbackAndReconnect` validates root auth callback
+  refresh, forced reconnect, and subscription replay against a real
+deployment. The same invariants stay pinned offline in
+  `client_auth_callback_test.go`, `baseclient/reconnect_test.go`, and
+  `internal/syncclient/websocket_manager_test.go`.
+- The live workflow expands confidence but does not replace upstream-backed
+  offline fixtures. When a live run reveals a new stable invariant, add or
+  tighten the corresponding offline test first, then update this document and
+  [COMPATIBILITY.md](COMPATIBILITY.md).
+
 ## Public API Drift Guard
 
 The community-facing API should stay close to the official clients while still
