@@ -30,7 +30,7 @@ func TestPerformanceGuideDocumentsBenchmarksAndBudgetPolicy(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/maintainers/PERFORMANCE.md must document %q", want)
 		}
-		}
+	}
 	for _, blocked := range []string{"```powershell", "$env:", `.ps1`, `C:\`} {
 		if strings.Contains(body, blocked) {
 			t.Fatalf("docs/maintainers/PERFORMANCE.md must stay shell-neutral and workstation-neutral; found %q", blocked)
