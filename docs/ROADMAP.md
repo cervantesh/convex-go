@@ -76,6 +76,8 @@ budgets, and performance baselines.
 
 Completed in this repository:
 
+- #30 Expand the live integration harness to full request, auth, and reconnect
+  coverage
 - #31 Add fuzz targets for values, wire protocol, and critical conversions
 - #32 Add deterministic soak coverage for reconnect, auth refresh, and
   cancellation
@@ -84,12 +86,11 @@ Completed in this repository:
 - #34 Add benchmarks and performance budgets for values, subscribe throughput,
   and reconnect
 - #35 Document and maintain a Go and backend compatibility matrix
+- #36 Feed live harness outcomes back into offline conformance fixtures
 
 Remaining:
 
-- #30 Expand the live integration harness to full request, auth, and reconnect
-  coverage
-- #36 Feed live harness outcomes back into offline conformance fixtures
+- None. Milestone 2 is complete.
 
 ## Milestone 3 - Adoption
 

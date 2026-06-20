@@ -96,7 +96,7 @@ Operational references:
 The client is usable today as the public community Go client, but these items
 remain open before official adoption should be proposed as complete:
 
-- broader live integration coverage
+- keep strengthening runtime hardening beyond the current manual live evidence
 - fuzzing and deeper runtime hardening
 - public cookbook and migration guides
 - demo application and demo CI smoke coverage
