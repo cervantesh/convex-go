@@ -14,7 +14,7 @@ Run the three benchmark groups independently:
 - `go test . -run=^$ -bench BenchmarkWebSocketClientSubscriptionThroughput -benchmem`
 - `go test ./baseclient -run=^$ -bench BenchmarkReplayOngoingRequests -benchmem`
 
-Capture each command's output to a text file using your shell's normal output
+Capture each command's output to a text file using shell's normal output
 redirection.
 
 ## Budget Comparison Workflow
