@@ -38,6 +38,8 @@ func runWithIO(args []string, stdout, stderr io.Writer) error {
 		return runFmtCheck(args[1:], stdout, stderr)
 	case "coverage-check":
 		return runCoverageCheck(args[1:], stdout, stderr)
+	case "bench-compare":
+		return runBenchCompare(args[1:], stdout, stderr)
 	case "export-snapshot":
 		return runExportSnapshot(args[1:], stdout, stderr)
 	case "integration-env-check":
@@ -181,6 +183,7 @@ func writeUsage(w io.Writer) {
 	_, _ = fmt.Fprintln(w, "Usage:")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint fmt-check")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint coverage-check -coverprofile=coverage.out -min=90")
+	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint bench-compare -old base.txt -new change.txt -max-regression=25")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint export-snapshot -out ../convex-go-public -git-init")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint integration-env-check")
 	_, _ = fmt.Fprintln(w, "  go run ./cmd/convex-go-maint release-check -version=0.1.0 -notes-out=release-notes.md")
