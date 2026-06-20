@@ -27,6 +27,7 @@ Maintainer workflow docs:
 - [maintainers/DEVELOPMENT.md](maintainers/DEVELOPMENT.md)
 - [maintainers/HANDOFF_GATE.md](maintainers/HANDOFF_GATE.md)
 - [maintainers/OFFICIAL_LINKING_REQUEST.md](maintainers/OFFICIAL_LINKING_REQUEST.md)
+- [maintainers/PERFORMANCE.md](maintainers/PERFORMANCE.md)
 - [maintainers/QUALITY.md](maintainers/QUALITY.md)
 - [maintainers/LIVE_INTEGRATION.md](maintainers/LIVE_INTEGRATION.md)
 - [maintainers/MUTATION_TESTING.md](maintainers/MUTATION_TESTING.md)
