@@ -45,3 +45,24 @@ export const ping = action({
     };
   },
 });
+
+export const viewer = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      return {
+        authenticated: false,
+        tokenIdentifier: null,
+        subject: null,
+        issuer: null,
+      };
+    }
+    return {
+      authenticated: true,
+      tokenIdentifier: identity.tokenIdentifier ?? null,
+      subject: identity.subject ?? null,
+      issuer: identity.issuer ?? null,
+    };
+  },
+});
