@@ -4,7 +4,7 @@ This packet summarizes the current public state of
 `github.com/cervantesh/convex-go` for maintainers, adopters, and the Convex
 team.
 
-Status as of 2026-06-19:
+Status as of 2026-06-20:
 
 - community-maintained
 - pre-v1
@@ -94,16 +94,17 @@ Operational references:
 ## Gaps Before Official Adoption
 
 The client is usable today as the public community Go client, but these items
-remain open before official adoption should be proposed as complete:
+still depend on external validation or explicit adoption agreement:
 
 - keep strengthening runtime hardening beyond the current manual live evidence
-- fuzzing and deeper runtime hardening
-- public cookbook and migration guides
-- demo application and demo CI smoke coverage
-- external adopter validation
-- namespace transition readiness under `github.com/get-convex/convex-go`
+- external adopter validation with real users outside maintainer-controlled
+  environments
+- explicit Convex agreement before any official ownership or namespace handoff
+- execution of the prepared `github.com/get-convex/convex-go` transition only
+  after that agreement
 
-These items are already tracked in [ROADMAP.md](ROADMAP.md).
+These are future adoption dependencies, not open implementation issues in this
+repository today. See [ROADMAP.md](ROADMAP.md).
 
 ## Current Ask To Convex
 
