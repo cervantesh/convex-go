@@ -44,6 +44,18 @@ type liveViewerIdentity struct {
 	Issuer          *string `json:"issuer"`
 }
 
+func loadLiveIntegrationConfig(t *testing.T) liveIntegrationConfig {
+	t.Helper()
+	cfg, err := loadLiveIntegrationConfigFromEnv()
+	if errors.Is(err, errLiveIntegrationURLNotSet) {
+		t.Skip(err.Error())
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	return cfg
+}
+
 func TestLiveIntegrationHTTPAndSync(t *testing.T) {
 	cfg := loadLiveIntegrationConfig(t)
 
