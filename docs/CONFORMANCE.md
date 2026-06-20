@@ -101,7 +101,7 @@ default CI coverage.
   `internal/syncprotocol/identity_conformance_test.go`.
 - `TestLiveIntegrationAuthCallbackAndReconnect` validates root auth callback
   refresh, forced reconnect, and subscription replay against a real
-deployment. The same invariants stay pinned offline in
+  deployment. The same invariants stay pinned offline in
   `client_auth_callback_test.go`, `baseclient/reconnect_test.go`, and
   `internal/syncclient/websocket_manager_test.go`.
 - The live workflow expands confidence but does not replace upstream-backed
