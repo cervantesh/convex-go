@@ -5,8 +5,10 @@ to a Convex-adoptable official client.
 
 ## Current status
 
-As of 2026-06-19, Milestone 0 is complete. This public repository is now the
-source of truth for the module path, roadmap, issues, CI, tags, and releases.
+As of 2026-06-20, repository-owned milestones 0-4 are complete. The remaining
+adoption work now depends on external adopters or explicit Convex agreement,
+so those future steps are documented here but are not kept open as active
+repository issues.
 
 - `github.com/cervantesh/convex-go` is the public module path.
 - `v0.1.0` already exists as a public tag.
@@ -17,7 +19,8 @@ source of truth for the module path, roadmap, issues, CI, tags, and releases.
 Historical incubation copies may still exist as archives, but they should not
 receive forward-looking roadmap updates, release tags, or active maintenance.
 
-Umbrella tracker: #19
+The original umbrella tracker is closed; this file is the durable roadmap
+record.
 
 ## Frozen public contract
 
@@ -107,7 +110,12 @@ Completed in this repository:
 
 Remaining:
 
-- #42 Run an external adopter validation program for the Go client
+- None. The repository-owned portion of Milestone 3 is complete.
+
+External dependency, not kept open as a standing repository issue:
+
+- Validate the SDK with real adopters outside maintainer-controlled
+  environments when those adopters exist.
 
 ## Milestone 4 - Convex Adoption Readiness
 
@@ -129,24 +137,29 @@ Remaining:
 
 - None. Milestone 4 is complete.
 
-## Milestone 5 - Official Handoff
+## Milestone 5 - External Handoff Contingencies
 
 Goal: execute the official handoff only after Convex explicitly agrees to
 adopt the client.
 
-- #49 Choose the handoff form after Convex accepts adoption
-- #50 Execute the module path migration to `github.com/get-convex/convex-go`
-  when approved
-- #51 Publish transition releases under the legacy and official namespaces
-- #52 Update docs, demos, and official links after handoff
-- #53 Publish the post-handoff v1 roadmap for the official Go client
+This milestone is intentionally not tracked as open repository issues today.
+Reopen or recreate these steps only after explicit Convex agreement.
+
+Future steps after that agreement:
+
+- Choose the handoff form.
+- Execute the module path migration to `github.com/get-convex/convex-go`.
+- Publish transition releases under the legacy and official namespaces.
+- Update docs, demos, and official links after handoff.
+- Publish the post-handoff v1 roadmap for the official Go client.
 
 ## Working rules
 
+- No repository-owned implementation issues remain open after Milestones 0-4.
+- External adopter validation and Milestone 5 handoff work should be reopened
+  or recreated only after the required outside state change.
 - The strategy remains community-first until Convex explicitly accepts adoption
   work.
-- Milestone 5 stays blocked on Convex agreement plus the Milestone 4 handoff
-  gate.
-- Work lands through issues and PRs; avoid direct pushes to `main`.
+- Work lands through issues and pull requests. Avoid direct pushes to `main`.
 - Public claims about parity or readiness must stay backed by versioned docs,
   tests, and public tracker evidence.
