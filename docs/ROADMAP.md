@@ -5,10 +5,7 @@ to a Convex-adoptable official client.
 
 ## Current status
 
-As of 2026-06-20, Milestone 0 is complete and repository-owned milestones 1-4
-are complete. The remaining adoption work now depends on external adopters or
-explicit Convex agreement, so those future steps are documented here but are
-not kept open as active repository issues.
+As of 2026-06-20, repository-owned milestones 0-4 are complete. Milestone 0 is complete, so this public repository remains the source of truth for roadmap, issues, CI, tags, and releases. The remaining adoption work now depends on external adopters or explicit Convex agreement, so those future steps are documented here but are not kept open as active repository issues.
 
 - `github.com/cervantesh/convex-go` is the public module path.
 - `v0.1.0` already exists as a public tag.
