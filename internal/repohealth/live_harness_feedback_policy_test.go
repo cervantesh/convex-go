@@ -41,5 +41,5 @@ func TestConformanceDocsDescribeLiveHarnessFeedbackLoop(t *testing.T) {
 		if !strings.Contains(body, want) {
 			t.Fatalf("docs/CONFORMANCE.md must document %q", want)
 		}
-		}
+	}
 }
